@@ -84,7 +84,7 @@ export default function usePolygonLayerHook() {
 			setObsDepth(DurationTypes.PERIOD)
 		}
 	}, [DAY, PERIOD])
-  
+
 	const centerSelectedPolygon = useCallback(() => {
 		if (
 			Object.entries(lakesChartOptions)
@@ -113,20 +113,21 @@ export default function usePolygonLayerHook() {
 
 	const activeLake = useCallback(
 		(id, coordWW) => {
+			console.log({ id })
 			setCoordId({
-				id,
+				id: id.toString(),
 				coord: coordWW,
 			})
-			dispatch(addLake({ id }))
+			dispatch(addLake({ id: id.toString() }))
 		},
 		[dispatch]
 	)
 
 	const updateLake = useCallback(
 		(id) => {
-			dispatch(updateModeVolume({ id }))
-			dispatch(updateActivelakes({ id }))
-			dispatch(addLakeChartOptions({ id }))
+			dispatch(updateModeVolume({ id: id.toString() }))
+			dispatch(updateActivelakes({ id: id.toString() }))
+			dispatch(addLakeChartOptions({ id: id.toString() }))
 		},
 		[dispatch]
 	)

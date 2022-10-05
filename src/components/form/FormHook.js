@@ -14,6 +14,8 @@ export default function useFormHook({ canvas }) {
 	const dispatch = useDispatch()
 	const filenameLakes = active
 		.map((id) => {
+      console.log({ id })
+			console.log(information[id])
 			return information[id].name
 		})
 		.join("_")
