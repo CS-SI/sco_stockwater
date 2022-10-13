@@ -1,9 +1,9 @@
-import { createSlice } from "@reduxjs/toolkit"
+import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {}
 
 export const yearsChartOptionsSlice = createSlice({
-	name: "yearsChartOptions",
+	name: 'yearsChartOptions',
 	initialState,
 	reducers: {
 		addYearsChartOptions: (state, action) => {
@@ -23,6 +23,9 @@ export const yearsChartOptionsSlice = createSlice({
 			const { year } = action.payload
 			state[year].selected = !state[year].selected
 		},
+		resetYearschartOptions: () => {
+			return initialState
+		},
 	},
 })
 
@@ -30,6 +33,7 @@ export const {
 	addYearsChartOptions,
 	toggleYearChartVisibility,
 	toggleYearChartSelection,
+	resetYearschartOptions,
 } = yearsChartOptionsSlice.actions
 
 export default yearsChartOptionsSlice.reducer

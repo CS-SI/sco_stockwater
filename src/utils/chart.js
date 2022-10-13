@@ -16,7 +16,7 @@ export const handleDataSetsBooleanOption = (
 		const { index } = item
 		const dataOptionValue = item[dataOption]
 
-		if (obsTypes.length === 1) {
+		if (obsTypes === 1) {
 			if (dataOptionValue) {
 				newData[index][dataSetOption] = false
 			}
@@ -25,7 +25,7 @@ export const handleDataSetsBooleanOption = (
 			}
 		}
 
-		if (obsTypes.length === 2) {
+		if (obsTypes === 2) {
 			if (dataOptionValue) {
 				newData[index === 0 ? 0 : index * 2][dataSetOption] = false
 				newData[index === 0 ? 1 : index * 2 + 1][dataSetOption] = false
@@ -35,7 +35,7 @@ export const handleDataSetsBooleanOption = (
 				newData[index === 0 ? 1 : index * 2 + 1][dataSetOption] = true
 			}
 		}
-		if (obsTypes.length === 3) {
+		if (obsTypes === 3) {
 			if (dataOptionValue) {
 				newData[index === 0 ? 0 : index * 3][dataSetOption] = false
 				newData[index === 0 ? 1 : index * 3 + 1][dataSetOption] = false
@@ -79,7 +79,7 @@ export const handleDataSetsBorderWidthOption = (
 		const { index } = item
 		const dataOptionValue = item[dataOption]
 
-		if (obsTypes.length === 1) {
+		if (obsTypes === 1) {
 			if (dataOptionValue) {
 				newData[index][dataSetOption] = config.style.selected[dataSetOption]
 			}
@@ -88,7 +88,7 @@ export const handleDataSetsBorderWidthOption = (
 			}
 		}
 
-		if (obsTypes.length === 2) {
+		if (obsTypes === 2) {
 			if (dataOptionValue) {
 				newData[index === 0 ? 0 : index * 2][dataSetOption] =
 					config.style.selected[dataSetOption]
@@ -104,7 +104,7 @@ export const handleDataSetsBorderWidthOption = (
 					config.style.default[dataSetOption]
 			}
 		}
-		if (obsTypes.length === 3) {
+		if (obsTypes === 3) {
 			if (dataOptionValue) {
 				newData[index === 0 ? 0 : index * 3][dataSetOption] =
 					config.style.selected[dataSetOption]

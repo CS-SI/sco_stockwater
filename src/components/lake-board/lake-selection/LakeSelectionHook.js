@@ -1,21 +1,21 @@
-import { useEffect, useCallback, useState } from "react"
-import { removeLake } from "@stores/stateLakeSlice"
+import { useEffect, useCallback, useState } from 'react'
+import { removeLake } from '@stores/stateLakeSlice'
 import {
 	toggleLakeChartSelection,
 	toggleLakeChartVisibility,
 	removeLakeChartOptions,
 	toggleLakeChartInfoVisibility,
-} from "@stores/lakesChartOptionsSlice"
+} from '@stores/lakesChartOptionsSlice'
 import {
 	toggleYearChartSelection,
 	toggleYearChartVisibility,
-} from "@stores/yearsChartOptionsSlice"
-import { removeDataFromVolume } from "@stores/dataSlice"
-import { saveAs } from "file-saver"
-import { useDispatch, useSelector } from "react-redux"
-import JSZip from "jszip"
-import { AppConfig, DurationTypes } from "../../../config"
-import { handleSeriesPathDependsOfForm } from "@/utils/seriePath"
+} from '@stores/yearsChartOptionsSlice'
+import { removeDataFromVolume } from '@stores/dataSlice'
+import { saveAs } from 'file-saver'
+import { useDispatch, useSelector } from 'react-redux'
+import JSZip from 'jszip'
+import { AppConfig, DurationTypes } from '../../../config'
+import { handleSeriesPathDependsOfForm } from '@/utils/seriePath'
 export const useLakeSelectionHook = ({ id, coordinates, index, name }) => {
 	const [bgOptic, setBgOptic] = useState({})
 	const [bgRadar, setBgRadar] = useState({})
@@ -24,17 +24,17 @@ export const useLakeSelectionHook = ({ id, coordinates, index, name }) => {
 	const [isSelected, setIsSelected] = useState(false)
 	const [obsDepth, setObsDepth] = useState(DurationTypes.PERIOD)
 	const dispatch = useDispatch()
-	const chartOptions = useSelector((state) => state.chart)
+	const chartOptions = useSelector(state => state.chart)
 	const { dataType, OPTIC, RADAR, YEAR, REFERENCE, VOLUME, DAY, PERIOD } =
-		useSelector((state) => state.form)
-	const { form } = useSelector((state) => state)
+		useSelector(state => state.form)
+	const { form } = useSelector(state => state)
 	const [bool, setBool] = useState(false)
 
-	const { lakesChartOptions } = useSelector((state) => state)
-	const { yearsChartOptions } = useSelector((state) => state)
-	const { data, mode } = useSelector((state) => state.data)
-	const { information, seriePath } = useSelector((state) => state.information)
-	const { active } = useSelector((state) => state.stateLake)
+	const { lakesChartOptions } = useSelector(state => state)
+	const { yearsChartOptions } = useSelector(state => state)
+	const { data, mode } = useSelector(state => state.data)
+	const { information, seriePath } = useSelector(state => state.information)
+	const { active } = useSelector(state => state.stateLake)
 	const setlakeIconsOptions = useCallback(() => {
 		if (!YEAR && lakesChartOptions[id]) {
 			setIsVisible(lakesChartOptions[id].visible)
@@ -103,7 +103,7 @@ export const useLakeSelectionHook = ({ id, coordinates, index, name }) => {
 		if (YEAR) {
 			dispatch(toggleYearChartSelection({ year: id }))
 		}
-	}, [YEAR, coordinates, dispatch, id])
+	}, [YEAR, dispatch, id])
 
 	const toggleChartVisibilty = useCallback(() => {
 		if (!YEAR) {
@@ -123,12 +123,12 @@ export const useLakeSelectionHook = ({ id, coordinates, index, name }) => {
 		const zip = new JSZip()
 		const seriePathLakes = handleSeriesPathDependsOfForm(seriePath[id], form)
 		for (const path of seriePathLakes) {
-      const fileName = path.split("/").pop().split(".")[0]
+			const fileName = path.split('/').pop().split('.')[0]
 			const res = await fetch(path)
 			const blob = await res.blob()
 			zip.file(`${fileName}.csv`, blob)
 		}
-		zip.generateAsync({ type: "blob" }).then((content) => {
+		zip.generateAsync({ type: 'blob' }).then(content => {
 			saveAs(content, `${name}_${dataType.toLowerCase()}.zip`)
 		})
 	}, [id, dataType])

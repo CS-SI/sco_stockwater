@@ -1,24 +1,22 @@
 /* eslint-disable no-undef */
-import { AppConfig } from "@/config"
-import { useSelector, useDispatch } from "react-redux"
-import { saveAs } from "file-saver"
-import { useCallback } from "react"
-import { handleResetZoom } from "../../stores/chartSlice"
-import { toggleActiveYears } from "../../stores/lakesSlice"
-import { toggleYear } from "../../stores/formSlice"
+import { AppConfig } from '@/config'
+import { useSelector, useDispatch } from 'react-redux'
+import { saveAs } from 'file-saver'
+import { useCallback } from 'react'
+import { handleResetZoom } from '../../stores/chartSlice'
+import { toggleActiveYears } from '../../stores/lakesSlice'
+import { toggleYear } from '../../stores/formSlice'
 export default function useFormHook({ canvas }) {
-	const form = useSelector((state) => state.form)
-	const { active } = useSelector((state) => state.stateLake)
-	const { information } = useSelector((state) => state.information)
+	const form = useSelector(state => state.form)
+	const { active } = useSelector(state => state.stateLake)
+	const { information } = useSelector(state => state.information)
 
 	const dispatch = useDispatch()
 	const filenameLakes = active
-		.map((id) => {
-      console.log({ id })
-			console.log(information[id])
+		.map(id => {
 			return information[id].name
 		})
-		.join("_")
+		.join('_')
 	const dataTypesValues = AppConfig.attributes
 	const observationTypesValues = AppConfig.observationTypes
 	const durationValues = AppConfig.duration
@@ -26,10 +24,10 @@ export default function useFormHook({ canvas }) {
 	const modeTypesValues = AppConfig.modeTypes
 
 	const downloadChartImage = useCallback(
-		(e) => {
+		e => {
 			e.preventDefault()
 			if (!canvas) return
-			const dataURL = canvas.toDataURL("image/png")
+			const dataURL = canvas.toDataURL('image/png')
 			if (dataURL) {
 				try {
 					saveAs(
@@ -44,7 +42,7 @@ export default function useFormHook({ canvas }) {
 		[canvas, filenameLakes]
 	)
 
-	const resetZoomChart = useCallback((e) => {
+	const resetZoomChart = useCallback(e => {
 		e.preventDefault()
 		dispatch(handleResetZoom({ zoom: true }))
 	}, [])
