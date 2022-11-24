@@ -10,12 +10,6 @@ import {
   DurationTypes,
   DataTypes,
 } from './config'
-import {
-  getAttributesFilepath,
-  getAttributesUnit,
-  getObservationTypesAbbr,
-  getDurationAbbr,
-} from './utils/config'
 import { csv } from 'd3'
 import {
   fillEmptyDataOfDate,
@@ -24,14 +18,20 @@ import {
   getLastDateOfArrays,
 } from './utils/date'
 import { extractField, formatValue, normalizeValue } from './utils/value'
-import { returnHighestValue } from './utils/math'
+import { getHighestValue } from './utils/math'
 import {
   getSeriePathByAttribute,
   getSeriePathByObsTypeAndObsDepth,
 } from './utils/seriePath'
-import { getDataFormalized } from './utils/data'
+import {
+  getDataFormalized,
+  getDataRaw,
+  getReferenceSerieDataType,
+  makeFillingRateZSVdata,
+} from './utils/data'
 import { addLakeChartOptions } from './stores/lakesChartOptionsSlice'
 import { addYearsChartOptions } from './stores/yearsChartOptionsSlice'
+import { concatDataTypeObsDepthByYear } from './utils/config'
 
 export function useAppHook() {
   const [isOneLakeActive, setIsOneLakeActive] = useState(false)
@@ -64,13 +64,34 @@ export function useAppHook() {
     const period = AppConfig.duration[DurationTypes.PERIOD].abbr
     const allSeriesPath = serPath[id]
 
-    console.log(
-      getDurationAbbr(DurationTypes.DAY),
-      getObservationTypesAbbr(ObservationTypes.OPTIC),
-      getAttributesUnit(DataTypes.VOLUME),
-      getAttributesFilepath(DataTypes.FILLING_RATE)
-    )
+    console.log('-------------------------------------------')
+    const newAllData = await getDataRaw(allSeriesPath, form)
+    console.log({ newAllData })
+    const dataZSV = getReferenceSerieDataType(newAllData[2], dataType)
+    console.log({ dataZSV })
+    const formalizedData = getDataFormalized(dataZSV, dataType)
+    console.log({ formalizedData })
+    let newfillingRateZSV
+    if (dataType === DataTypes.FILLING_RATE) {
+      newfillingRateZSV = makeFillingRateZSVdata(formalizedData)
+    }
+    console.log({ newfillingRateZSV })
 
+    const newData = [
+      getDataFormalized(newAllData[0], dataType),
+      getDataFormalized(newAllData[1], dataType),
+      newfillingRateZSV ? newfillingRateZSV : formalizedData,
+    ]
+    console.log({ newData })
+    console.log({ obsDepth })
+    const name = concatDataTypeObsDepthByYear(dataType, obsDepth)
+    const dataByYear = getDataByYear([newData])
+    console.log({ name, dataByYear })
+    const obj = {
+      [name]: dataByYear[0],
+    }
+    console.log({ obj })
+    console.log('-------------------------------------------')
     const fillingRateSeries = getSeriePathByAttribute(
       allSeriesPath,
       fillingRatePath
@@ -146,16 +167,22 @@ export function useAppHook() {
     ]
     const firstDate = getFirstDateOfArrays(volumeCSV)
     const lastDate = getLastDateOfArrays(volumeCSV)
+
     const referenceSeriesFormalized =
       referenceSeriesRaw && formatValue(referenceSeriesRaw)
+
     const surfaceZSV =
       referenceSeriesFormalized &&
       extractField([referenceSeriesFormalized], 'area')[0]
+
     const volumeZSV =
       referenceSeriesFormalized &&
       extractField([referenceSeriesFormalized], 'volume')[0]
-    const rateRef = volumeZSV && returnHighestValue([volumeZSV])
+
+    const rateRef = volumeZSV && getHighestValue([volumeZSV])
+
     const fillingRateZSV = rateRef && normalizeValue([volumeZSV], rateRef)[0]
+
     try {
       const fillingRateDayRaw = [
         (await getDataFormalized(fillingRateOpticDay, '%')) || [],

@@ -1,67 +1,67 @@
-import { AppConfig } from "./../config"
+import { AppConfig } from './../config'
 export const getSeriePathByAttribute = (serie, attribute) => {
-	return serie.filter((el) => el.includes(attribute))
+  return serie.filter(el => el.includes(attribute))
 }
 
 export const getSeriePathByObsTypeAndObsDepth = (serie, obsType, obsDepth) => {
-	return serie.filter((el) => el.includes(`${obsType}${obsDepth}`))
+  return serie.filter(el => el.includes(`${obsType}${obsDepth}`))
 }
 
-export const handleSeriesPathDependsOfForm = (seriePath, form) => {
-	const { dataType, RADAR, OPTIC, REFERENCE, DAY, PERIOD } = form
-	const allSeriePaths = seriePath
-		.filter((path) => {
-			return (
-				path.includes(dataType.toLowerCase()) ||
-				(REFERENCE &&
-					path.includes(AppConfig.observationTypes["REFERENCE"].abbr))
-			)
-		})
-		.map((path) => {
-			const tmp = []
-			if (RADAR && path.includes(AppConfig.observationTypes["RADAR"].abbr)) {
-				if (
-					DAY &&
-					path.includes(
-						`${AppConfig.observationTypes["RADAR"].abbr}${AppConfig.duration["DAY"].abbr}`
-					)
-				) {
-					tmp.push(path)
-				}
-				if (
-					PERIOD &&
-					path.includes(
-						`${AppConfig.observationTypes["RADAR"].abbr}${AppConfig.duration["PERIOD"].abbr}`
-					)
-				) {
-					tmp.push(path)
-				}
-			}
-			if (OPTIC) {
-				if (
-					DAY &&
-					path.includes(
-						`${AppConfig.observationTypes["OPTIC"].abbr}${AppConfig.duration["DAY"].abbr}`
-					)
-				) {
-					tmp.push(path)
-				}
-				if (
-					PERIOD &&
-					path.includes(
-						`${AppConfig.observationTypes["OPTIC"].abbr}${AppConfig.duration["PERIOD"].abbr}`
-					)
-				) {
-					tmp.push(path)
-				}
-			}
-			if (
-				REFERENCE &&
-				path.includes(AppConfig.observationTypes["REFERENCE"].abbr)
-			) {
-				tmp.push(path)
-			}
-			return tmp
-		})
-	return allSeriePaths.filter((path) => path.length > 0).flatMap((path) => path)
+export const getSeriePath = (seriePath, form) => {
+  const { dataType, RADAR, OPTIC, REFERENCE, DAY, PERIOD } = form
+  const allSeriePaths = seriePath
+    .filter(path => {
+      return (
+        path.includes(dataType.toLowerCase()) ||
+        (REFERENCE &&
+          path.includes(AppConfig.observationTypes['REFERENCE'].abbr))
+      )
+    })
+    .map(path => {
+      const tmp = []
+      if (RADAR && path.includes(AppConfig.observationTypes['RADAR'].abbr)) {
+        if (
+          DAY &&
+          path.includes(
+            `${AppConfig.observationTypes['RADAR'].abbr}${AppConfig.duration['DAY'].abbr}`
+          )
+        ) {
+          tmp.push(path)
+        }
+        if (
+          PERIOD &&
+          path.includes(
+            `${AppConfig.observationTypes['RADAR'].abbr}${AppConfig.duration['PERIOD'].abbr}`
+          )
+        ) {
+          tmp.push(path)
+        }
+      }
+      if (OPTIC) {
+        if (
+          DAY &&
+          path.includes(
+            `${AppConfig.observationTypes['OPTIC'].abbr}${AppConfig.duration['DAY'].abbr}`
+          )
+        ) {
+          tmp.push(path)
+        }
+        if (
+          PERIOD &&
+          path.includes(
+            `${AppConfig.observationTypes['OPTIC'].abbr}${AppConfig.duration['PERIOD'].abbr}`
+          )
+        ) {
+          tmp.push(path)
+        }
+      }
+      if (
+        REFERENCE &&
+        path.includes(AppConfig.observationTypes['REFERENCE'].abbr)
+      ) {
+        tmp.push(path)
+      }
+      return tmp
+    })
+  return allSeriePaths.filter(path => path.length > 0).flatMap(path => path)
 }
