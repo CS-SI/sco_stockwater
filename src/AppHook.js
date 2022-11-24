@@ -84,13 +84,29 @@ export function useAppHook() {
     ]
     console.log({ newData })
     console.log({ obsDepth })
-    const name = concatDataTypeObsDepthByYear(dataType, obsDepth)
+    const obsName = obsDepth.toLowerCase()
+    const obsNameByYear = `${obsName}ByYear`
     const dataByYear = getDataByYear([newData])
-    console.log({ name, dataByYear })
-    const obj = {
-      [name]: dataByYear[0],
+    console.log({ obsNameByYear, dataByYear })
+    const dataWB = {
+      [obsName]: newData,
+      [obsNameByYear]: dataByYear[0],
     }
-    console.log({ obj })
+    console.log({ obsName })
+    dispatch(
+      addData({ id, dataType, dataWB, obsDepth, obsName, obsNameByYear })
+    )
+    dispatch(addLakeChartOptions({ id }))
+    // const fillingRate = {
+    //   [DurationTypes.DAY]: {
+    //     day: fillingRateDayRaw,
+    //     dayByYear: fillingRateDayByYEar[0],
+    //   },
+    //   [DurationTypes.PERIOD]: {
+    //     period: fillingRatePeriodRaw,
+    //     periodByYear: fillingRatePeriodByYear[0],
+    //   },
+    // }
     console.log('-------------------------------------------')
     const fillingRateSeries = getSeriePathByAttribute(
       allSeriesPath,
