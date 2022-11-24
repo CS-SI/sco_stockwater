@@ -101,7 +101,7 @@ export const Modal = ({ isOpen, handleSetNoData }) => {
 						<p>Ooops !</p>
 					</Title>
 					<Container>
-						<Message>No data found for this reservoirs.</Message>
+						<Message>No time serie available</Message>
 						<ButtonOk onClick={handleClose}>OK</ButtonOk>
 					</Container>
 				</Div>

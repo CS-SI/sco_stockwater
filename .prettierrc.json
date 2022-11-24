@@ -1,8 +1,7 @@
 {
-	"arrowParens": "always",
-	"quoteProps": "consistent",
-	"useTabs": true,
-	"semi": false,
-	"singleQuote": false,
-	"printWidth": 80
+  "arrowParens": "avoid",
+  "quoteProps": "consistent",
+  "semi": false,
+  "singleQuote": true,
+  "printWidth": 100
 }

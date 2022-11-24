@@ -166,7 +166,6 @@ export default function useChartHook() {
 				for (const id of active) {
 					if (!VOLUME) {
 						const dataRaw = data[id][dataType][obsDepth]?.raw
-						console.log('dataRaw', dataRaw)
 						const dataActualized = handleObsType(
 							dataRaw,
 							OPTIC,
@@ -233,7 +232,6 @@ export default function useChartHook() {
 			}
 
 			if (optic && !radar && reference) {
-				console.log('=>', data)
 				if (data?.[2].length === 0) {
 					dataTmp.push([data.slice(0, 1)])
 				}
@@ -686,10 +684,10 @@ export default function useChartHook() {
 		if (
 			!YEAR ||
 			dataSets.length !==
-				Object.values(yearsChartOptions).length *
-					data[active.at(-1)][dataType][obsDepth].year[
-						Object.keys(yearsChartOptions)[0]
-					].length
+			Object.values(yearsChartOptions).length *
+			data[active.at(-1)][dataType][obsDepth].year[
+				Object.keys(yearsChartOptions)[0]
+			].length
 		)
 			return
 		const dataLength =
@@ -712,10 +710,10 @@ export default function useChartHook() {
 		if (
 			!YEAR ||
 			dataSets.length !==
-				Object.values(yearsChartOptions).length *
-					data[active.at(-1)]?.[dataType][obsDepth]?.year[
-						Object.keys(yearsChartOptions)[0]
-					].length
+			Object.values(yearsChartOptions).length *
+			data[active.at(-1)]?.[dataType][obsDepth]?.year[
+				Object.keys(yearsChartOptions)[0]
+			].length
 		)
 			return
 		const dataLength =

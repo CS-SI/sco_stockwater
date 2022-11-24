@@ -50,13 +50,11 @@ export default function usePolygonLayerHook() {
 
 	useEffect(() => {
 		if (active.length >= 2) return
-		console.log(data[coordId.id]?.[dataType][obsDepth].raw[0].length)
 		if (
 			active.length === 1 &&
 			data[coordId.id]?.[dataType][obsDepth].raw[0].length > 0 &&
 			containerHeight !== '45%'
 		) {
-			console.log('here')
 			resizeMap('45%')
 			setContainerHeight('45%')
 		}
@@ -125,7 +123,6 @@ export default function usePolygonLayerHook() {
 
 	const activeLake = useCallback(
 		(id, coordWW) => {
-			console.log({ id })
 			setCoordId({
 				id: id.toString(),
 				coord: coordWW,
