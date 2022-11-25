@@ -51,7 +51,9 @@ export function useAppHook() {
 
   const handleData = useCallback(async () => {
     const id = active.at(-1)
-    if (Object.keys(data).includes(id)) return
+    console.log('!!! ', data[id]?.[dataType]?.[obsDepth])
+    if (data[id]?.[dataType][obsDepth]) return
+    // if (Object.keys(data).includes(id)) return
     const fillingRatePath =
       AppConfig.attributes[DataTypes.FILLING_RATE].filePath
     const surfacePath = AppConfig.attributes[DataTypes.SURFACE].filePath
@@ -65,282 +67,207 @@ export function useAppHook() {
     const allSeriesPath = serPath[id]
 
     console.log('-------------------------------------------')
+
     const newAllData = await getDataRaw(allSeriesPath, form)
-    console.log({ newAllData })
-    const dataZSV = getReferenceSerieDataType(newAllData[2], dataType)
-    console.log({ dataZSV })
-    const formalizedData = getDataFormalized(dataZSV, dataType)
-    console.log({ formalizedData })
+
+    let dataZSV
     let newfillingRateZSV
+    if (dataType === DataTypes.FILLING_RATE) {
+      dataZSV = getReferenceSerieDataType(newAllData[2], DataTypes.VOLUME)
+    } else {
+      dataZSV = getReferenceSerieDataType(newAllData[2], dataType)
+    }
+    const formalizedData = getDataFormalized(dataZSV, dataType)
+
     if (dataType === DataTypes.FILLING_RATE) {
       newfillingRateZSV = makeFillingRateZSVdata(formalizedData)
     }
-    console.log({ newfillingRateZSV })
 
     const newData = [
       getDataFormalized(newAllData[0], dataType),
       getDataFormalized(newAllData[1], dataType),
       newfillingRateZSV ? newfillingRateZSV : formalizedData,
     ]
-    console.log({ newData })
-    console.log({ obsDepth })
     const obsName = obsDepth.toLowerCase()
     const obsNameByYear = `${obsName}ByYear`
     const dataByYear = getDataByYear([newData])
-    console.log({ obsNameByYear, dataByYear })
     const dataWB = {
       [obsName]: newData,
       [obsNameByYear]: dataByYear[0],
     }
-    console.log({ obsName })
     dispatch(
       addData({ id, dataType, dataWB, obsDepth, obsName, obsNameByYear })
     )
     dispatch(addLakeChartOptions({ id }))
-    // const fillingRate = {
-    //   [DurationTypes.DAY]: {
-    //     day: fillingRateDayRaw,
-    //     dayByYear: fillingRateDayByYEar[0],
-    //   },
-    //   [DurationTypes.PERIOD]: {
-    //     period: fillingRatePeriodRaw,
-    //     periodByYear: fillingRatePeriodByYear[0],
-    //   },
-    // }
+
     console.log('-------------------------------------------')
-    const fillingRateSeries = getSeriePathByAttribute(
-      allSeriesPath,
-      fillingRatePath
-    )
-    const fillingRateOpticDay = getSeriePathByObsTypeAndObsDepth(
-      fillingRateSeries,
-      optic,
-      day
-    )
-    const fillingRateOpticPeriod = getSeriePathByObsTypeAndObsDepth(
-      fillingRateSeries,
-      optic,
-      period
-    )
-    const fillingRateRadarDay = getSeriePathByObsTypeAndObsDepth(
-      fillingRateSeries,
-      radar,
-      day
-    )
-    const fillingRateRadarPeriod = getSeriePathByObsTypeAndObsDepth(
-      fillingRateSeries,
-      radar,
-      period
-    )
-    const surfaceSeries = getSeriePathByAttribute(allSeriesPath, surfacePath)
-    const surfaceOpticDay = getSeriePathByObsTypeAndObsDepth(
-      surfaceSeries,
-      optic,
-      day
-    )
-    const surfaceOpticPeriod = getSeriePathByObsTypeAndObsDepth(
-      surfaceSeries,
-      optic,
-      period
-    )
-    const surfaceRadarDay = getSeriePathByObsTypeAndObsDepth(
-      surfaceSeries,
-      radar,
-      day
-    )
-    const surfaceRadarPeriod = getSeriePathByObsTypeAndObsDepth(
-      surfaceSeries,
-      radar,
-      period
-    )
-    const volumeSeries = getSeriePathByAttribute(allSeriesPath, volumePath)
-    const volumeOpticDay = getSeriePathByObsTypeAndObsDepth(
-      volumeSeries,
-      optic,
-      day
-    )
-    const volumeOpticPeriod = getSeriePathByObsTypeAndObsDepth(
-      volumeSeries,
-      optic,
-      period
-    )
-    const volumeRadarDay = getSeriePathByObsTypeAndObsDepth(
-      volumeSeries,
-      radar,
-      day
-    )
-    const volumeRadarPeriod = getSeriePathByObsTypeAndObsDepth(
-      volumeSeries,
-      radar,
-      period
-    )
 
-    const referenceSeries = getSeriePathByAttribute(allSeriesPath, reference)
-    const referenceSeriesRaw = await csv(referenceSeries).catch(err => {})
-    const volumeCSV = [
-      (await getDataFormalized(volumeOpticDay, 'hm³')) || [],
-      (await getDataFormalized(volumeRadarDay, 'hm³')) || [],
-    ]
-    const firstDate = getFirstDateOfArrays(volumeCSV)
-    const lastDate = getLastDateOfArrays(volumeCSV)
-
-    const referenceSeriesFormalized =
-      referenceSeriesRaw && formatValue(referenceSeriesRaw)
-
-    const surfaceZSV =
-      referenceSeriesFormalized &&
-      extractField([referenceSeriesFormalized], 'area')[0]
-
-    const volumeZSV =
-      referenceSeriesFormalized &&
-      extractField([referenceSeriesFormalized], 'volume')[0]
-
-    const rateRef = volumeZSV && getHighestValue([volumeZSV])
-
-    const fillingRateZSV = rateRef && normalizeValue([volumeZSV], rateRef)[0]
-
-    try {
-      const fillingRateDayRaw = [
-        (await getDataFormalized(fillingRateOpticDay, '%')) || [],
-        (await getDataFormalized(fillingRateRadarDay, '%')) || [],
-        fillingRateZSV || [],
-      ]
-      const fillingRatePeriodRaw = [
-        (await getDataFormalized(fillingRateOpticPeriod, '%')) || [],
-        (await getDataFormalized(fillingRateRadarPeriod, '%')) || [],
-        fillingRateZSV || [],
-      ]
-
-      const surfaceDayRaw = [
-        (await getDataFormalized(surfaceOpticDay, 'ha')) || [],
-        (await getDataFormalized(surfaceRadarDay, 'ha')) || [],
-        surfaceZSV || [],
-      ]
-      const surfacePeriodRaw = [
-        (await getDataFormalized(surfaceOpticPeriod, 'ha')) || [],
-        (await getDataFormalized(surfaceRadarPeriod, 'ha')) || [],
-        surfaceZSV || [],
-      ]
-      const volumeDayRaw = [
-        (await getDataFormalized(volumeOpticDay, 'hm³')) || [],
-        (await getDataFormalized(volumeRadarDay, 'hm³')) || [],
-        volumeZSV || [],
-      ]
-      const volumePeriodRaw = [
-        (await getDataFormalized(volumeOpticPeriod, 'hm³')) || [],
-        (await getDataFormalized(volumeRadarPeriod, 'hm³')) || [],
-        volumeZSV || [],
-      ]
-      const allData = [
-        ...fillingRateDayRaw,
-        ...fillingRatePeriodRaw,
-        ...surfaceDayRaw,
-        ...surfacePeriodRaw,
-        ...volumeDayRaw,
-        ...volumePeriodRaw,
-      ]
-      const noDataCount = arr => arr.filter(el => el.length === 0).length
-      let noDataLength = noDataCount(allData)
-      const allFillingRateData = [...fillingRateDayRaw, ...fillingRatePeriodRaw]
-      const allSurfaceData = [...surfaceDayRaw, ...surfacePeriodRaw]
-      const allVolumeData = [...volumeDayRaw, ...volumePeriodRaw]
-      if (
-        dataType === DataTypes.FILLING_RATE &&
-        noDataCount(allFillingRateData) === allFillingRateData.length
-      ) {
-        setNoData(true)
-      }
-
-      if (
-        dataType === DataTypes.SURFACE &&
-        noDataCount(allSurfaceData) === allSurfaceData.length
-      ) {
-        setNoData(true)
-      }
-
-      if (
-        dataType === DataTypes.VOLUME &&
-        noDataCount(allVolumeData) === allVolumeData.length
-      ) {
-        setNoData(true)
-      }
-
-      if (noDataLength === allData.length) {
-        setNoData(true)
-        dispatch(removeLake({ id }))
-      }
-
-      let fillingRateDayByYEar = []
-      let fillingRatePeriodByYear = []
-      if (fillingRateDayRaw.length > 0 && fillingRatePeriodRaw.length > 0) {
-        fillingRateDayByYEar = getDataByYear([fillingRateDayRaw])
-        fillingRatePeriodByYear = getDataByYear([fillingRatePeriodRaw])
-      }
-
-      let surfaceDayByYear = []
-      let surfacePeriodByYear = []
-      if (surfaceDayRaw?.length > 0 && surfacePeriodRaw?.length > 0) {
-        surfaceDayByYear = getDataByYear([surfaceDayRaw])
-        surfacePeriodByYear = getDataByYear([surfacePeriodRaw])
-      }
-
-      let volumeDayByYear = []
-      let volumePeriodByYear = []
-      let volumeDayFull = []
-      let volumePeriodFull = []
-
-      if (volumeDayRaw?.length > 0 && volumePeriodRaw?.length > 0) {
-        volumeDayByYear = getDataByYear([volumeDayRaw])
-        volumeDayFull = fillEmptyDataOfDate([volumeDayRaw])
-        volumePeriodByYear = getDataByYear([volumePeriodRaw])
-        volumePeriodFull = fillEmptyDataOfDate([volumePeriodRaw])
-      }
-
-      const fillingRate = {
-        [DurationTypes.DAY]: {
-          day: fillingRateDayRaw,
-          dayByYear: fillingRateDayByYEar[0],
-        },
-        [DurationTypes.PERIOD]: {
-          period: fillingRatePeriodRaw,
-          periodByYear: fillingRatePeriodByYear[0],
-        },
-      }
-      const surface = {
-        [DurationTypes.DAY]: {
-          day: surfaceDayRaw,
-          dayByYear: surfaceDayByYear[0],
-        },
-        [DurationTypes.PERIOD]: {
-          period: surfacePeriodRaw,
-          periodByYear: surfacePeriodByYear[0],
-        },
-      }
-
-      const volume = {
-        [DurationTypes.DAY]: {
-          day: volumeDayRaw,
-          dayByYear: volumeDayByYear[0],
-          dayFull: volumeDayFull[0],
-        },
-        [DurationTypes.PERIOD]: {
-          period: volumePeriodRaw,
-          periodByYear: volumePeriodByYear[0],
-          periodFull: volumePeriodFull[0],
-        },
-      }
-      if (
-        fillingRatePeriodRaw.length > 0 &&
-        surfacePeriodRaw.length > 0 &&
-        volumePeriodRaw.length > 0
-      ) {
-        dispatch(addData({ id, fillingRate, surface, volume }))
-        dispatch(addLakeChartOptions({ id }))
-      }
-    } catch (err) {
-      console.log(err)
-    }
-  }, [dispatch, active])
+    // const referenceSeries = getSeriePathByAttribute(allSeriesPath, reference)
+    // const referenceSeriesRaw = await csv(referenceSeries).catch(err => {})
+    // const volumeCSV = [
+    //   (await getDataFormalized(volumeOpticDay, 'hm³')) || [],
+    //   (await getDataFormalized(volumeRadarDay, 'hm³')) || [],
+    // ]
+    // const firstDate = getFirstDateOfArrays(volumeCSV)
+    // const lastDate = getLastDateOfArrays(volumeCSV)
+    //
+    // const referenceSeriesFormalized =
+    //   referenceSeriesRaw && formatValue(referenceSeriesRaw)
+    //
+    // const surfaceZSV =
+    //   referenceSeriesFormalized &&
+    //   extractField([referenceSeriesFormalized], 'area')[0]
+    //
+    // const volumeZSV =
+    //   referenceSeriesFormalized &&
+    //   extractField([referenceSeriesFormalized], 'volume')[0]
+    //
+    // const rateRef = volumeZSV && getHighestValue([volumeZSV])
+    //
+    // const fillingRateZSV = rateRef && normalizeValue([volumeZSV], rateRef)[0]
+    //
+    // try {
+    //   const fillingRateDayRaw = [
+    //     (await getDataFormalized(fillingRateOpticDay, '%')) || [],
+    //     (await getDataFormalized(fillingRateRadarDay, '%')) || [],
+    //     fillingRateZSV || [],
+    //   ]
+    //   const fillingRatePeriodRaw = [
+    //     (await getDataFormalized(fillingRateOpticPeriod, '%')) || [],
+    //     (await getDataFormalized(fillingRateRadarPeriod, '%')) || [],
+    //     fillingRateZSV || [],
+    //   ]
+    //
+    //   const surfaceDayRaw = [
+    //     (await getDataFormalized(surfaceOpticDay, 'ha')) || [],
+    //     (await getDataFormalized(surfaceRadarDay, 'ha')) || [],
+    //     surfaceZSV || [],
+    //   ]
+    //   const surfacePeriodRaw = [
+    //     (await getDataFormalized(surfaceOpticPeriod, 'ha')) || [],
+    //     (await getDataFormalized(surfaceRadarPeriod, 'ha')) || [],
+    //     surfaceZSV || [],
+    //   ]
+    //   const volumeDayRaw = [
+    //     (await getDataFormalized(volumeOpticDay, 'hm³')) || [],
+    //     (await getDataFormalized(volumeRadarDay, 'hm³')) || [],
+    //     volumeZSV || [],
+    //   ]
+    //   const volumePeriodRaw = [
+    //     (await getDataFormalized(volumeOpticPeriod, 'hm³')) || [],
+    //     (await getDataFormalized(volumeRadarPeriod, 'hm³')) || [],
+    //     volumeZSV || [],
+    //   ]
+    //   const allData = [
+    //     ...fillingRateDayRaw,
+    //     ...fillingRatePeriodRaw,
+    //     ...surfaceDayRaw,
+    //     ...surfacePeriodRaw,
+    //     ...volumeDayRaw,
+    //     ...volumePeriodRaw,
+    //   ]
+    //   const noDataCount = arr => arr.filter(el => el.length === 0).length
+    //   let noDataLength = noDataCount(allData)
+    //   const allFillingRateData = [...fillingRateDayRaw, ...fillingRatePeriodRaw]
+    //   const allSurfaceData = [...surfaceDayRaw, ...surfacePeriodRaw]
+    //   const allVolumeData = [...volumeDayRaw, ...volumePeriodRaw]
+    //   if (
+    //     dataType === DataTypes.FILLING_RATE &&
+    //     noDataCount(allFillingRateData) === allFillingRateData.length
+    //   ) {
+    //     setNoData(true)
+    //   }
+    //
+    //   if (
+    //     dataType === DataTypes.SURFACE &&
+    //     noDataCount(allSurfaceData) === allSurfaceData.length
+    //   ) {
+    //     setNoData(true)
+    //   }
+    //
+    //   if (
+    //     dataType === DataTypes.VOLUME &&
+    //     noDataCount(allVolumeData) === allVolumeData.length
+    //   ) {
+    //     setNoData(true)
+    //   }
+    //
+    //   if (noDataLength === allData.length) {
+    //     setNoData(true)
+    //     dispatch(removeLake({ id }))
+    //   }
+    //
+    //   let fillingRateDayByYEar = []
+    //   let fillingRatePeriodByYear = []
+    //   if (fillingRateDayRaw.length > 0 && fillingRatePeriodRaw.length > 0) {
+    //     fillingRateDayByYEar = getDataByYear([fillingRateDayRaw])
+    //     fillingRatePeriodByYear = getDataByYear([fillingRatePeriodRaw])
+    //   }
+    //
+    //   let surfaceDayByYear = []
+    //   let surfacePeriodByYear = []
+    //   if (surfaceDayRaw?.length > 0 && surfacePeriodRaw?.length > 0) {
+    //     surfaceDayByYear = getDataByYear([surfaceDayRaw])
+    //     surfacePeriodByYear = getDataByYear([surfacePeriodRaw])
+    //   }
+    //
+    //   let volumeDayByYear = []
+    //   let volumePeriodByYear = []
+    //   let volumeDayFull = []
+    //   let volumePeriodFull = []
+    //
+    //   if (volumeDayRaw?.length > 0 && volumePeriodRaw?.length > 0) {
+    //     volumeDayByYear = getDataByYear([volumeDayRaw])
+    //     volumeDayFull = fillEmptyDataOfDate([volumeDayRaw])
+    //     volumePeriodByYear = getDataByYear([volumePeriodRaw])
+    //     volumePeriodFull = fillEmptyDataOfDate([volumePeriodRaw])
+    //   }
+    //
+    //   const fillingRate = {
+    //     [DurationTypes.DAY]: {
+    //       day: fillingRateDayRaw,
+    //       dayByYear: fillingRateDayByYEar[0],
+    //     },
+    //     [DurationTypes.PERIOD]: {
+    //       period: fillingRatePeriodRaw,
+    //       periodByYear: fillingRatePeriodByYear[0],
+    //     },
+    //   }
+    //   const surface = {
+    //     [DurationTypes.DAY]: {
+    //       day: surfaceDayRaw,
+    //       dayByYear: surfaceDayByYear[0],
+    //     },
+    //     [DurationTypes.PERIOD]: {
+    //       period: surfacePeriodRaw,
+    //       periodByYear: surfacePeriodByYear[0],
+    //     },
+    //   }
+    //
+    //   const volume = {
+    //     [DurationTypes.DAY]: {
+    //       day: volumeDayRaw,
+    //       dayByYear: volumeDayByYear[0],
+    //       dayFull: volumeDayFull[0],
+    //     },
+    //     [DurationTypes.PERIOD]: {
+    //       period: volumePeriodRaw,
+    //       periodByYear: volumePeriodByYear[0],
+    //       periodFull: volumePeriodFull[0],
+    //     },
+    //   }
+    //   if (
+    //     fillingRatePeriodRaw.length > 0 &&
+    //     surfacePeriodRaw.length > 0 &&
+    //     volumePeriodRaw.length > 0
+    //   ) {
+    //     dispatch(addData({ id, fillingRate, surface, volume }))
+    //     dispatch(addLakeChartOptions({ id }))
+    //   }
+    // } catch (err) {
+    //   console.log(err)
+    // }
+  }, [dispatch, active, dataType, obsDepth])
 
   useEffect(() => {
     if (active.length === 0) return
@@ -356,7 +283,7 @@ export function useAppHook() {
     if (active.length > 0) {
       handleData()
     }
-  }, [active])
+  }, [active, obsDepth, dataType])
 
   const handleCanvas = useCallback(cvas => {
     setCanvas(cvas)
@@ -379,7 +306,7 @@ export function useAppHook() {
   useEffect(() => {
     if (
       active.length > 0 &&
-      data[active.at(-1)]?.[dataType]?.[obsDepth].raw[0].length > 0
+      data[active.at(-1)]?.[dataType]?.[obsDepth]?.raw[0].length > 0
     ) {
       setIsOneLakeActive(true)
     }
