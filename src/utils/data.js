@@ -30,13 +30,12 @@ const getReferenceSerieDataType = (ZSVseries, dataType) => {
 }
 
 const getDataFormalized = (dataRaw, dataType) => {
-  console.log('=> ', dataType)
   const unit = getAttributesUnit(dataType)
   return formatValue(dataRaw, unit)
 }
 
 const makeFillingRateZSVdata = volumeZSV => {
-  const rateRef = getHighestValue(volumeZSV)[0]
+  const rateRef = getHighestValue(volumeZSV)
   return normalizeValue(volumeZSV, rateRef)
 }
 

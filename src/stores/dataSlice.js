@@ -23,14 +23,29 @@ export const dataSlice = createSlice({
     addData: (state, action) => {
       const { id, dataType, dataWB, obsDepth, obsName, obsNameByYear } =
         action.payload
-      console.log({ id, dataType, dataWB, obsDepth, obsName })
+      console.log('STORE', { id, dataType, dataWB, obsDepth, obsName })
+      // !Exist
       if (!state.data[id]) {
+        console.log('!EXIST')
         state.data[id] = {
           [dataType]: {
             [DurationTypes[obsDepth]]: {
               raw: dataWB[obsName],
               year: dataWB[obsNameByYear],
             },
+          },
+        }
+      }
+
+      console.log('=> ', current(state))
+      // Exist
+      if (!state.data[id][dataType][obsDepth]) {
+        console.log('EXIST')
+        state.data[id][dataType] = {
+          ...state.data[id][dataType],
+          [DurationTypes[obsDepth]]: {
+            raw: dataWB[obsName],
+            year: dataWB[obsNameByYear],
           },
         }
       }

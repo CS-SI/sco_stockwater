@@ -1,6 +1,5 @@
 export const extractDataByYear = data => {
   if (!data) return []
-  console.log('date ', data)
   const dataByYear = {}
   data
     .map(item => {

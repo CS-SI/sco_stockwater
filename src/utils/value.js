@@ -31,7 +31,6 @@ export const formatCSVValue = (data, unit) => {
 }
 
 export const normalizeValue = (arr, rate) => {
-  console.log('value normalize', { arr, rate })
   return arr.map(data => {
     return { date: data.date, value: (data.value / rate) * 100 }
   })
@@ -49,7 +48,6 @@ export const extractField = (arr, column) => {
 export const formatValue = (data, unit) => {
   if (!data) return
   const { length } = data
-  console.log('value format', { data, unit, length })
   return data.map(el => {
     return {
       date: el.date,
