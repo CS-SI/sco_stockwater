@@ -3,7 +3,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { addLake, updateActivelakes } from '@/stores/stateLakeSlice'
 import { updateModeVolume } from '../../../../stores/dataSlice'
-import { DurationTypes } from '../../../../config'
+import { DurationTypes, ObservationTypes } from '../../../../config'
 import { addLakeChartOptions } from '../../../../stores/lakesChartOptionsSlice'
 import { addYearsChartOptions } from '../../../../stores/yearsChartOptionsSlice'
 
@@ -133,12 +133,12 @@ export default function usePolygonLayerHook() {
   )
 
   const updateLake = useCallback(
-    id => {
-      dispatch(updateModeVolume({ id: id.toString() }))
+    (id, obsDepth) => {
+      dispatch(updateModeVolume({ id: id.toString(), obsDepth }))
       dispatch(updateActivelakes({ id: id.toString() }))
       dispatch(addLakeChartOptions({ id: id.toString() }))
     },
-    [dispatch]
+    [dispatch, obsDepth]
   )
 
   useEffect(() => {
@@ -159,5 +159,6 @@ export default function usePolygonLayerHook() {
     loaded,
     active,
     updateLake,
+    obsDepth,
   }
 }

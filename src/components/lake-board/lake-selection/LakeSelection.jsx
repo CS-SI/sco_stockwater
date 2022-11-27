@@ -156,10 +156,6 @@ export const LakeSelection = ({
     mode,
   } = useLakeSelectionHook({ id, name, coordinates, index, showLakeInfo })
 
-  useEffect(() => {
-    console.log({ obsDepth })
-  }, [obsDepth])
-
   if (active.includes(id) && !data[id]) {
     return (
       <StyledDiv>

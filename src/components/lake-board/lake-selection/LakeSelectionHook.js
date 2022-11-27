@@ -28,7 +28,6 @@ export const useLakeSelectionHook = ({ id, coordinates, index, name }) => {
   const { dataType, OPTIC, RADAR, YEAR, REFERENCE, VOLUME, DAY, PERIOD } =
     useSelector(state => state.form)
   const { form } = useSelector(state => state)
-  const [bool, setBool] = useState(false)
 
   const { lakesChartOptions } = useSelector(state => state)
   const { yearsChartOptions } = useSelector(state => state)
@@ -92,7 +91,7 @@ export const useLakeSelectionHook = ({ id, coordinates, index, name }) => {
 
   const handleClickDesactiveLake = useCallback(() => {
     dispatch(removeLake({ id }))
-    dispatch(removeDataFromVolume({ id }))
+    dispatch(removeDataFromVolume({ id, obsDepth }))
     dispatch(removeLakeChartOptions({ id }))
   }, [dispatch, id])
 
