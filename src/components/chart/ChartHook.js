@@ -154,24 +154,30 @@ export default function useChartHook() {
     }
   }, [YEAR, active, data, dataType, obsDepth, OPTIC, RADAR, REFERENCE])
 
+  const handleChartData = useCallback(() => {})
   useEffect(() => {
     if (YEAR) return
+    console.log('AH AH AH AH')
     if (active.length > 0 && data[active.at(-1)]?.[dataType]?.[obsDepth]) {
       let dataTmp = []
 
       if (
-        (lastDataType && lastObsDepth && dataType !== lastDataType) ||
-        obsTypes !== lastObstypes
+        (lastDataType !== '' && dataType !== lastDataType) ||
+        (lastObsDepth !== '' && obsDepth !== lastObsDepth)
       ) {
         for (const id of active) {
+          console.log('LOOP', id)
           if (!VOLUME) {
-            const dataRaw = data[id][dataType][obsDepth]?.raw
+            const dataRaw = data[id][dataType]?.[obsDepth]?.raw
+            console.log({ dataRaw })
+            if (!dataRaw) return
             const dataActualized = handleObsType(
               dataRaw,
               OPTIC,
               RADAR,
               REFERENCE
             )
+            console.log({ dataActualized })
             dataTmp.push(dataActualized)
           }
 
@@ -188,17 +194,20 @@ export default function useChartHook() {
           }
         }
         setChartData(dataTmp)
-      } else {
+      }
+
+      if (lastDataType === '' || dataType === lastDataType) {
         const id = active.at(-1)
         if (!VOLUME) {
-          const dataRaw = data[id][dataType][obsDepth].raw
+          const dataRaw = data[id][dataType]?.[obsDepth].raw
+          console.log({ dataRaw })
           const dataActualized = handleObsType(dataRaw, OPTIC, RADAR, REFERENCE)
 
           dataTmp.push(dataActualized)
         }
 
         if (VOLUME) {
-          const dataVolume = mode.volume[obsDepth].raw
+          const dataVolume = mode.volume.raw
           const dataVolumeActualized = handleObsType(
             dataVolume,
             OPTIC,
@@ -207,14 +216,18 @@ export default function useChartHook() {
           )
           dataTmp.push(dataVolumeActualized)
         }
+
         if (JSON.stringify(dataTmp) !== JSON.stringify(chartData)) {
-          if (YEAR || chartData.length === 1) {
+          if (YEAR || chartData.length === 0) {
+            console.log('1')
             setChartData(dataTmp)
           } else {
+            console.log('2')
             setChartData([...chartData, ...dataTmp])
           }
         }
       }
+
       setLastDataType(dataType)
       setLastObstypes(obsTypes)
       setLastObsDepth(obsDepth)

@@ -53,7 +53,7 @@ export function useAppHook() {
   const handleData = useCallback(
     async lakeId => {
       if (data[lakeId]?.[dataType]?.[obsDepth]) return
-      // if (Object.keys(data).includes(id)) return
+      console.log({ lakeId })
       const fillingRatePath =
         AppConfig.attributes[DataTypes.FILLING_RATE].filePath
       const surfacePath = AppConfig.attributes[DataTypes.SURFACE].filePath
@@ -303,11 +303,12 @@ export function useAppHook() {
   }, [YEAR, data])
 
   useEffect(() => {
-    if (data[active.at(-1)]?.[dataType][obsDepth]) return
+    if (data[active.at(-1)]?.[dataType]?.[obsDepth]) return
     if (
       active.length > 0 &&
       (dataType === lastDataType || obsDepth === lastObsDepth)
     ) {
+      console.log('SAME DATATYPE')
       const lakeId = active.at(-1)
       handleData(lakeId)
     }
@@ -315,6 +316,7 @@ export function useAppHook() {
       (active.length > 1 && dataType !== lastDataType) ||
       obsDepth !== lastObsDepth
     ) {
+      console.log('DATATYPE CHANGED')
       for (const lakeId of active) {
         handleData(lakeId)
       }
