@@ -28,6 +28,7 @@ export default function useChartHook() {
   const [scales, setScales] = useState()
   const [options, setOptions] = useState()
   const [isSameDataType, setIsSameDataType] = useState(true)
+  const [lastMode, setLastMode] = useState('')
   const [datesOfYear, setDatesOfYear] = useState({})
   const form = useSelector(state => state.form)
   const chart = useSelector(state => state.chart)
@@ -199,7 +200,8 @@ export default function useChartHook() {
 
       if (
         (lastDataType !== '' && dataType !== lastDataType) ||
-        (lastObsDepth !== '' && obsDepth !== lastObsDepth)
+        (lastObsDepth !== '' && obsDepth !== lastObsDepth) ||
+        (lastMode === 'year' && active.length > 1)
       ) {
         for (const id of active) {
           console.log('!!!!!!!!!!!!!!! SET CHARTDATA')
@@ -212,7 +214,11 @@ export default function useChartHook() {
         console.log({ dataTmp })
         setChartData(dataTmp)
       }
-      if (lastDataType === '' || dataType === lastDataType) {
+      if (
+        lastDataType === '' ||
+        dataType === lastDataType ||
+        (lastMode === 'year' && active.length > 1)
+      ) {
         const id = active.at(-1)
         const dataRaw = data[id][dataType]?.[obsDepth].raw
         const dataActualized = handleObsType(dataRaw, OPTIC, RADAR, REFERENCE)
@@ -220,8 +226,8 @@ export default function useChartHook() {
         dataTmp.push(dataActualized)
 
         if (JSON.stringify(dataTmp) !== JSON.stringify(chartData)) {
-          console.log('NOT COOL')
-          if (chartData.length === 0) {
+          console.log('NOT COOL', { dataTmp })
+          if (chartData.length === 0 || lastMode === 'year') {
             setChartData(dataTmp)
           } else {
             setChartData([...chartData, ...dataTmp])
@@ -472,12 +478,17 @@ export default function useChartHook() {
     console.log({ arrTmp })
     if (JSON.stringify([...arr]) !== JSON.stringify(dataSets)) {
       console.log(' SET DATASET')
-      setDataSets([...dataSets, ...arr])
+      if (lastMode === 'year') {
+        setDataSets([...arr])
+      } else {
+        setDataSets([...dataSets, ...arr])
+      }
     }
 
     arr.length = 0
     setLastchartData(JSON.stringify(chartData[0]))
     setIsSameDataType(true)
+    setLastMode('')
   }, [chartData, charType])
 
   useEffect(() => {
@@ -529,6 +540,7 @@ export default function useChartHook() {
 
     arr.length = 0
     setLastchartData(JSON.stringify(chartData[0]))
+    setLastMode('year')
   }, [YEAR, chartData, charType])
 
   const makesScalesForyear = useCallback((isDisplay, startDate, endDate) => {
