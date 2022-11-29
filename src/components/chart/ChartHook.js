@@ -86,15 +86,12 @@ export default function useChartHook() {
     if (!OPTIC && !RADAR && !REFERENCE) {
       setObsTypes([])
       setChartData([])
-      console.log({ OPTIC, RADAR, REFERENCE })
     }
     if (!DAY && !PERIOD) {
       setChartData([])
-      console.log({ DAY, PERIOD })
     }
     if (YEAR && chartData.length > 1) {
       setChartData([])
-      console.log({ YEAR })
     }
     if (DAY) {
       setObsDepth(DurationTypes.DAY)
@@ -105,38 +102,25 @@ export default function useChartHook() {
     if (active.length === 0) {
       setChartData([])
       setDataSets([])
-      console.log('01')
-    }
-    if (VOLUME && active.length === 0) {
-      setDataSets([])
     }
   }, [DAY, OPTIC, PERIOD, RADAR, REFERENCE, YEAR, VOLUME, active])
 
   useEffect(() => {
+    if (VOLUME) return
     if (
       dataType !== lastDataType ||
       JSON.stringify(obsTypes) !== JSON.stringify(lastObstypes)
     ) {
       setChartData([])
+      setDataSets([])
     }
   }, [dataType, lastDataType, obsTypes, lastObstypes])
 
   useEffect(() => {
-    if (lastDataType !== '' && dataType !== lastDataType) {
+    if (!VOLUME && lastDataType !== '' && dataType !== lastDataType) {
       setIsSameDataType(false)
     }
   }, [dataType, lastDataType])
-
-  useEffect(() => {
-    console.log({ isSameDataType })
-  }, [isSameDataType])
-
-  useEffect(() => {
-    if (chartData.length === 0) {
-      setDataSets([])
-      console.log('RESET RESET DATASETS')
-    }
-  }, [chartData])
 
   useEffect(() => {
     if (zoomReset) {
@@ -189,7 +173,6 @@ export default function useChartHook() {
     if (JSON.stringify([dataVolumeActualized]) !== JSON.stringify(chartData)) {
       setChartData([dataVolumeActualized])
     }
-
     setLastDataType(dataType)
   }, [VOLUME, mode, obsTypes, obsDepth])
 
@@ -204,14 +187,11 @@ export default function useChartHook() {
         (lastMode === 'year' && active.length > 1)
       ) {
         for (const id of active) {
-          console.log('!!!!!!!!!!!!!!! SET CHARTDATA')
-          console.log('LOOP', id)
           const dataRaw = data[id][dataType]?.[obsDepth]?.raw
           if (!dataRaw) return
           const dataActualized = handleObsType(dataRaw, OPTIC, RADAR, REFERENCE)
           dataTmp.push(dataActualized)
         }
-        console.log({ dataTmp })
         setChartData(dataTmp)
       }
       if (
@@ -226,7 +206,6 @@ export default function useChartHook() {
         dataTmp.push(dataActualized)
 
         if (JSON.stringify(dataTmp) !== JSON.stringify(chartData)) {
-          console.log('NOT COOL', { dataTmp })
           if (chartData.length === 0 || lastMode === 'year') {
             setChartData(dataTmp)
           } else {
@@ -408,15 +387,7 @@ export default function useChartHook() {
   )
 
   useEffect(() => {
-    console.log({ chartData })
-  }, [chartData])
-
-  useEffect(() => {
-    console.log({ dataSets })
-    console.log('------------------------------------')
-  }, [dataSets])
-  useEffect(() => {
-    if (!chartData.at(-1) || data[active.at(-1)][obsDepth]) return
+    if (!chartData.at(-1) || data[active.at(-1)]?.[obsDepth]) return
     if (
       !Object.values(data).length &&
       chartData.length === 0 &&
@@ -428,7 +399,6 @@ export default function useChartHook() {
     let allDatesSorted = []
 
     if (isSameDataType) {
-      console.log('SAME DATATYPE ')
       const indexColor = chartData.length - 1
       chartData.at(-1).forEach((item, index) => {
         item?.forEach((itm, idx) => {
@@ -448,7 +418,6 @@ export default function useChartHook() {
       })
     }
     if (!VOLUME && !isSameDataType) {
-      console.log('LOOP LOOP LOOP')
       chartData?.forEach((key, index) => {
         key?.forEach(item => {
           item?.forEach((itm, idx) => {
@@ -474,11 +443,8 @@ export default function useChartHook() {
     setDateMin(firstDateGraph)
     const lastDateGraph = getChartFirstDateNextMonth(allDatesSorted.at(-1))
     setDateMax(lastDateGraph)
-    const arrTmp = [...arr]
-    console.log({ arrTmp })
     if (JSON.stringify([...arr]) !== JSON.stringify(dataSets)) {
-      console.log(' SET DATASET')
-      if (lastMode === 'year') {
+      if (lastMode === 'year' || VOLUME) {
         setDataSets([...arr])
       } else {
         setDataSets([...dataSets, ...arr])
@@ -534,7 +500,6 @@ export default function useChartHook() {
     }
 
     if (JSON.stringify([...arr]) !== JSON.stringify(dataSets)) {
-      console.log('YEAR SET DATASET')
       setDataSets([...arr])
     }
 
@@ -653,7 +618,7 @@ export default function useChartHook() {
                 const { date } = context.raw
                 const { index } = context.dataset
                 const allValue = active.map(id => {
-                  return data[id][DataTypes.VOLUME]?.[obsDepth].full[index]
+                  return data[id]?.[DataTypes.VOLUME]?.[obsDepth].full[index]
                     .filter(item => item.date === date)
                     .map(item => item.value)
                 })
