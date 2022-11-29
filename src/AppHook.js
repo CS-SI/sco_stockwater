@@ -2,27 +2,10 @@ import { useEffect, useState, useCallback } from 'react'
 import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
 import { addData } from './stores/dataSlice'
+import { removeLake } from './stores/stateLakeSlice'
 import { addColor } from './stores/chartSlice'
-import {
-  AppConfig,
-  SeriePathUtils,
-  ObservationTypes,
-  DurationTypes,
-  DataTypes,
-} from './config'
-import { csv } from 'd3'
-import {
-  fillEmptyDataOfDate,
-  getDataByYear,
-  getFirstDateOfArrays,
-  getLastDateOfArrays,
-} from './utils/date'
-import { extractField, formatValue, normalizeValue } from './utils/value'
-import { getHighestValue } from './utils/math'
-import {
-  getSeriePathByAttribute,
-  getSeriePathByObsTypeAndObsDepth,
-} from './utils/seriePath'
+import { ObservationTypes, DurationTypes, DataTypes } from './config'
+import { fillEmptyDataOfDate, getDataByYear } from './utils/date'
 import {
   getDataFormalized,
   getDataRaw,
@@ -31,7 +14,6 @@ import {
 } from './utils/data'
 import { addLakeChartOptions } from './stores/lakesChartOptionsSlice'
 import { addYearsChartOptions } from './stores/yearsChartOptionsSlice'
-import { concatDataTypeObsDepthByYear } from './utils/config'
 
 export function useAppHook() {
   const [isOneLakeActive, setIsOneLakeActive] = useState(false)
@@ -41,31 +23,20 @@ export function useAppHook() {
   const [lastDataType, setLastDataType] = useState(null)
   const [canvas, setCanvas] = useState(null)
   const [noData, setNoData] = useState(false)
+  //const [noDataFound, setNoDataFound] = useState({})
   const form = useSelector(state => state.form)
   const { active } = useSelector(state => state.stateLake)
   const { data, loaded } = useSelector(state => state.data)
   const { seriePath: serPath } = useSelector(state => state.information)
-  const { OPTIC, RADAR, DAY, PERIOD, REFERENCE, YEAR, dataType } = form
-  const { getSeriePath, getTimeseriesPath } = SeriePathUtils
+  const { DAY, PERIOD, YEAR, dataType } = form
   const dispatch = useDispatch()
-  const { unit } = AppConfig.attributes[dataType]
 
   const handleData = useCallback(
     async lakeId => {
       if (data[lakeId]?.[dataType]?.[obsDepth]) return
-      const fillingRatePath =
-        AppConfig.attributes[DataTypes.FILLING_RATE].filePath
-      const surfacePath = AppConfig.attributes[DataTypes.SURFACE].filePath
-      const volumePath = AppConfig.attributes[DataTypes.VOLUME].filePath
-      const optic = AppConfig.observationTypes[ObservationTypes.OPTIC].abbr
-      const radar = AppConfig.observationTypes[ObservationTypes.RADAR].abbr
-      const reference =
-        AppConfig.observationTypes[ObservationTypes.REFERENCE].abbr
-      const day = AppConfig.duration[DurationTypes.DAY].abbr
-      const period = AppConfig.duration[DurationTypes.PERIOD].abbr
       const allSeriesPath = serPath[lakeId]
 
-      const newAllData = await getDataRaw(allSeriesPath, form)
+      const newAllData = await getDataRaw(allSeriesPath, form).catch({})
 
       let dataZSV
       let newfillingRateZSV
@@ -80,6 +51,14 @@ export function useAppHook() {
       if (dataType === DataTypes.FILLING_RATE) {
         newfillingRateZSV = makeFillingRateZSVdata(formalizedData)
       }
+      const err = newAllData.some(el => el.length > 0)
+      const allData = newAllData.every(el => el.length > 0)
+      console.log({ err, allData })
+      if (!allData) {
+        setNoData(true)
+        dispatch(removeLake({ id: lakeId }))
+      }
+      if (!allData) return
       const newData = [
         getDataFormalized(newAllData[0], dataType),
         getDataFormalized(newAllData[1], dataType),
@@ -106,6 +85,7 @@ export function useAppHook() {
           [volumeFullDates]: volumeDataFullDates[0],
         }
       }
+      console.log({ dataWB })
       dispatch(
         addData({
           id: lakeId,
