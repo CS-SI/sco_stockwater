@@ -15,6 +15,8 @@ export const PolygonLayer = ({ data }) => {
     loaded,
     updateLake,
     obsDepth,
+    dataFromStore,
+    dataType,
   } = usePolygonLayerHook({
     data,
   })
@@ -36,10 +38,13 @@ export const PolygonLayer = ({ data }) => {
             // eslint-disable-next-line react-perf/jsx-no-new-object-as-prop
             eventHandlers={{
               click: () => {
-                if (!loaded.includes(ID_SWOT)) {
+                if (!dataFromStore[ID_SWOT]?.[dataType][obsDepth]) {
                   activeLake(ID_SWOT, [LAT_WW, LONG_WW])
                 }
-                if (!active.includes(ID_SWOT) && loaded.includes(ID_SWOT)) {
+                if (
+                  !active.includes(ID_SWOT) &&
+                  dataFromStore[ID_SWOT]?.[dataType][obsDepth]
+                ) {
                   updateLake(ID_SWOT, obsDepth)
                 }
               },

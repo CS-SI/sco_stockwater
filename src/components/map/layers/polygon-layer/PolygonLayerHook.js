@@ -3,7 +3,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { addLake, updateActivelakes } from '@/stores/stateLakeSlice'
 import { updateModeVolume } from '../../../../stores/dataSlice'
-import { DurationTypes, ObservationTypes } from '../../../../config'
+import { DataTypes, DurationTypes, ObservationTypes } from '../../../../config'
 import { addLakeChartOptions } from '../../../../stores/lakesChartOptionsSlice'
 import { addYearsChartOptions } from '../../../../stores/yearsChartOptionsSlice'
 
@@ -19,10 +19,10 @@ export default function usePolygonLayerHook() {
   const { YEAR, VOLUME, DAY, PERIOD, dataType } = useSelector(
     state => state.form
   )
-  const { active, loaded } = useSelector(state => state.stateLake)
+  const { active } = useSelector(state => state.stateLake)
   const { information } = useSelector(state => state.information)
   const { lakesChartOptions } = useSelector(state => state)
-  const { data } = useSelector(state => state.data)
+  const { data: dataFromStore, loaded } = useSelector(state => state.data)
   const map = useMap()
   const dispatch = useDispatch()
 
@@ -52,7 +52,7 @@ export default function usePolygonLayerHook() {
     if (active.length >= 2) return
     if (
       active.length === 1 &&
-      data[coordId.id]?.[dataType]?.[obsDepth]?.raw[0].length > 0 &&
+      dataFromStore[coordId.id]?.[dataType]?.[obsDepth]?.raw[0].length > 0 &&
       containerHeight !== '45%'
     ) {
       resizeMap('45%')
@@ -62,7 +62,7 @@ export default function usePolygonLayerHook() {
       resizeMap('100%')
       setContainerHeight('100%')
     }
-  }, [active.length, data, dataType, obsDepth, resizeMap, coordId.id])
+  }, [active.length, dataFromStore, dataType, obsDepth, resizeMap, coordId.id])
 
   useEffect(() => {
     if (containerHeight === '100%' && coordId.coord.length > 0) {
@@ -134,21 +134,22 @@ export default function usePolygonLayerHook() {
 
   const updateLake = useCallback(
     (id, obsDepth) => {
-      dispatch(updateModeVolume({ id: id.toString(), obsDepth }))
       dispatch(updateActivelakes({ id: id.toString() }))
       dispatch(addLakeChartOptions({ id: id.toString() }))
+      dispatch(updateModeVolume({ id: id.toString(), obsDepth }))
     },
+
     [dispatch, obsDepth]
   )
 
   useEffect(() => {
     if (active.length === 0) return
-    if (YEAR && data[active.at(-1)]) {
-      const dataYears = data[active.at(-1)][dataType][obsDepth].year
+    if (YEAR && dataFromStore[active.at(-1)]) {
+      const dataYears = dataFromStore[active.at(-1)][dataType][obsDepth].year
       const years = Object.keys(dataYears)
       dispatch(addYearsChartOptions({ years }))
     }
-  }, [dispatch, YEAR, active, dataType, obsDepth, loaded, data])
+  }, [dispatch, YEAR, active, dataType, obsDepth, loaded, dataFromStore])
 
   return {
     activeLake,
@@ -160,5 +161,7 @@ export default function usePolygonLayerHook() {
     active,
     updateLake,
     obsDepth,
+    dataFromStore,
+    dataType,
   }
 }

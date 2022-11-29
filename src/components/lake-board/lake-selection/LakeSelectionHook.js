@@ -90,10 +90,13 @@ export const useLakeSelectionHook = ({ id, coordinates, index, name }) => {
   }, [YEAR, index, chartOptions.YEAR.style])
 
   const handleClickDesactiveLake = useCallback(() => {
+    const activeLake = {
+      length: active.length - 1,
+    }
     dispatch(removeLake({ id }))
-    dispatch(removeDataFromVolume({ id, obsDepth }))
     dispatch(removeLakeChartOptions({ id }))
-  }, [dispatch, id])
+    dispatch(removeDataFromVolume({ id, obsDepth, activeLake }))
+  }, [dispatch, id, active.length])
 
   const toggleSelectedLake = useCallback(() => {
     if (!YEAR) {

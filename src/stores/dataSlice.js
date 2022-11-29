@@ -4,6 +4,7 @@ import { DataTypes, DurationTypes, ObservationTypes } from './../config'
 
 const initialState = {
   data: {},
+  loaded: [],
   mode: {
     volume: {
       raw: [],
@@ -25,7 +26,7 @@ export const dataSlice = createSlice({
         obsNameByYear,
         volumeFullDates,
       } = action.payload
-      
+      if (state.data[id]?.[dataType]?.[obsDepth]) return
       // !Exist
       if (!state.data[id]) {
         state.data[id] = {
@@ -49,14 +50,16 @@ export const dataSlice = createSlice({
         }
       }
 
+      if (!state.loaded.includes(id)) {
+        state.loaded.push(id)
+      }
+
       if (dataType !== DataTypes.VOLUME) return
 
       state.data[id][dataType][obsDepth] = {
         ...state.data[id][dataType][obsDepth],
         full: dataWB[volumeFullDates],
       }
-
-
 
       if (state.mode.volume.raw.length === 0) {
         state.mode.volume.raw = dataWB[volumeFullDates]
@@ -103,30 +106,40 @@ export const dataSlice = createSlice({
       }
     },
     removeDataFromVolume: (state, action) => {
-      const { id, obsDepth } = action.payload
-      const volumeRawToRemove = state.data[id].VOLUME[obsDepth].full.map(el => {
-        return el.filter(
-          el =>
-            el.date >= state.mode.volume.raw[0][0].date &&
-            el.date <= state.mode.volume.raw[0].at(-1).date
-        )
-      })
-
-      state.mode.volume.raw = state.mode.volume.raw.map((obs, index) => {
-        return obs.map((el, i) => {
-          const { date, value } = volumeRawToRemove[index][i]
-          if (el.date == date) {
-            return {
-              date: el.date,
-              value: el.value > value ? el.value - value : value - el.value,
-            }
+      const { id, obsDepth, activeLake } = action.payload
+      if (activeLake.length === 0) {
+        state.mode.volume.raw = []
+      }
+      if (activeLake.length === 1) {
+        state.mode.volume.raw = state.data[id].VOLUME?.[obsDepth].full
+      }
+      if (activeLake.length > 1) {
+        const volumeRawToRemove = state.data[id].VOLUME?.[obsDepth].full.map(
+          el => {
+            return el.filter(
+              el =>
+                el.date >= state.mode.volume.raw[0][0].date &&
+                el.date <= state.mode.volume.raw[0].at(-1).date
+            )
           }
+        )
+
+        state.mode.volume.raw = state.mode.volume.raw.map((obs, index) => {
+          return obs.map((el, i) => {
+            const { date, value } = volumeRawToRemove[index][i]
+            if (el.date == date) {
+              return {
+                date: el.date,
+                value: el.value > value ? el.value - value : value - el.value,
+              }
+            }
+          })
         })
-      })
+      }
     },
     updateModeVolume: (state, action) => {
       const { id, obsDepth } = action.payload
-      if (state.mode.volume.raw[0][0].value === 0) {
+      if (state.mode.volume.raw.length === 0) {
         state.mode.volume.raw = state.data[id].VOLUME[obsDepth].full
       } else {
         const modeVolumeFirstDate = state.mode.volume.raw[0]?.[0].date

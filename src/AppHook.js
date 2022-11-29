@@ -43,7 +43,7 @@ export function useAppHook() {
   const [noData, setNoData] = useState(false)
   const form = useSelector(state => state.form)
   const { active } = useSelector(state => state.stateLake)
-  const { data } = useSelector(state => state.data)
+  const { data, loaded } = useSelector(state => state.data)
   const { seriePath: serPath } = useSelector(state => state.information)
   const { OPTIC, RADAR, DAY, PERIOD, REFERENCE, YEAR, dataType } = form
   const { getSeriePath, getTimeseriesPath } = SeriePathUtils
@@ -53,7 +53,6 @@ export function useAppHook() {
   const handleData = useCallback(
     async lakeId => {
       if (data[lakeId]?.[dataType]?.[obsDepth]) return
-      console.log({ lakeId })
       const fillingRatePath =
         AppConfig.attributes[DataTypes.FILLING_RATE].filePath
       const surfacePath = AppConfig.attributes[DataTypes.SURFACE].filePath
@@ -300,28 +299,27 @@ export function useAppHook() {
     const dataYears = data[active.at(-1)][dataType][obsDepth].year
     const years = Object.keys(dataYears)
     dispatch(addYearsChartOptions({ years }))
-  }, [YEAR, data])
+  }, [YEAR, data, loaded])
 
   useEffect(() => {
-    if (data[active.at(-1)]?.[dataType]?.[obsDepth]) return
     if (
-      active.length > 0 &&
-      (dataType === lastDataType || obsDepth === lastObsDepth)
-    ) {
-      console.log('SAME DATATYPE')
-      const lakeId = active.at(-1)
-      handleData(lakeId)
-    }
-    if (
-      (active.length > 1 && dataType !== lastDataType) ||
-      obsDepth !== lastObsDepth
-    ) {
-      console.log('DATATYPE CHANGED')
+      active.length === loaded.length ||
+      data[active.at(-1)]?.[dataType]?.[obsDepth]
+    )
+      return
+    const lakeId = active.at(-1)
+    handleData(lakeId)
+  }, [active, data, dataType])
+
+  useEffect(() => {
+    if (active.length <= 1) return
+    if (dataType !== lastDataType || obsDepth !== lastObsDepth) {
       for (const lakeId of active) {
+        if (data[lakeId]?.[dataType]?.[obsDepth]) return
         handleData(lakeId)
       }
     }
-  }, [active, obsDepth, lastObsDepth, dataType, lastDataType])
+  }, [active, obsDepth, lastObsDepth, dataType, lastDataType, data])
 
   const handleCanvas = useCallback(cvas => {
     setCanvas(cvas)

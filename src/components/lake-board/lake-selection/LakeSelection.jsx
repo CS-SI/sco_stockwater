@@ -10,7 +10,7 @@ import {
   CarbonDownload,
   CarbonInformation,
 } from '../../carbon-icons'
-import { useEffect } from 'react'
+
 const StyledDiv = styled('div', {
   display: 'flex',
   justifyContent: 'space-between',
@@ -156,7 +156,7 @@ export const LakeSelection = ({
     mode,
   } = useLakeSelectionHook({ id, name, coordinates, index, showLakeInfo })
 
-  if (active.includes(id) && !data[id]) {
+  if (active.includes(id) && !data[id]?.[dataType]?.[obsDepth]) {
     return (
       <StyledDiv>
         <StyledParagraph>Loading...</StyledParagraph>
@@ -167,21 +167,21 @@ export const LakeSelection = ({
       <StyledDiv css={isSelected && backgroundBorderColored}>
         {VOLUME && id === 'total' && (
           <StyledDivObservationTypes>
-            {OPTIC && mode?.volume[obsDepth]?.raw[0]?.length > 0 && (
+            {OPTIC && mode.volume.raw[0]?.length > 0 && (
               <StyledDivContainerObsTypes>
                 <StyledSpanObsColor style={bgOptic} />
                 <SpanBgWhite />
                 <StyledSpanLabel>optic</StyledSpanLabel>
               </StyledDivContainerObsTypes>
             )}
-            {RADAR && mode?.volume[obsDepth]?.raw[1]?.length > 0 && (
+            {RADAR && mode.volume.raw[1]?.length > 0 && (
               <StyledDivContainerObsTypes>
                 <StyledSpanObsColor style={bgRadar} />
                 <SpanBgWhite />
                 <StyledSpanLabel>radar</StyledSpanLabel>
               </StyledDivContainerObsTypes>
             )}
-            {REFERENCE && mode?.volume[obsDepth]?.raw[2]?.length > 0 && (
+            {REFERENCE && mode.volume.raw[2]?.length > 0 && (
               <StyledDivContainerObsTypes>
                 <StyledSpanObsColor style={bgReference} />
                 <SpanBgWhite />

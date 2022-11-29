@@ -2,7 +2,6 @@ import { createSlice } from "@reduxjs/toolkit"
 
 const initialState = {
 	active: [],
-	loaded: [],
 	indexToRemoveFromChartData: "",
 }
 
@@ -16,9 +15,7 @@ export const stateLakeSlice = createSlice({
 				state.active.push(id)
 			}
 
-			if (!state.loaded.includes(id)) {
-				state.loaded.push(id)
-			}
+		
 		},
 		removeLake: (state, action) => {
 			const { id } = action.payload
