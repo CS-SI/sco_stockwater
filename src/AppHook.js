@@ -23,7 +23,7 @@ export function useAppHook() {
   const [lastDataType, setLastDataType] = useState(null)
   const [canvas, setCanvas] = useState(null)
   const [noData, setNoData] = useState(false)
-  //const [noDataFound, setNoDataFound] = useState({})
+  const [noDataFound, setNoDataFound] = useState([])
   const form = useSelector(state => state.form)
   const { active } = useSelector(state => state.stateLake)
   const { data, loaded } = useSelector(state => state.data)
@@ -51,14 +51,31 @@ export function useAppHook() {
       if (dataType === DataTypes.FILLING_RATE) {
         newfillingRateZSV = makeFillingRateZSVdata(formalizedData)
       }
-      const err = newAllData.some(el => el.length > 0)
       const allData = newAllData.every(el => el.length > 0)
-      console.log({ err, allData })
-      if (!allData) {
-        setNoData(true)
+      const noData = newAllData.every(el => el.length === 0)
+      console.log({ allData, noData })
+      if (noData) {
         dispatch(removeLake({ id: lakeId }))
       }
-      if (!allData) return
+
+      let tmp = []
+      newAllData.forEach((serie, index) => {
+        if (serie.length === 0) {
+          if (index === 0) {
+            tmp.push('optic')
+          }
+          if (index === 1) {
+            tmp.push('radar')
+          }
+          if (index === 2) {
+            tmp.push('reference')
+          }
+        }
+      })
+      setNoDataFound(tmp)
+
+      if (noData) return
+
       const newData = [
         getDataFormalized(newAllData[0], dataType),
         getDataFormalized(newAllData[1], dataType),
@@ -99,6 +116,7 @@ export function useAppHook() {
       )
 
       dispatch(addLakeChartOptions({ id: lakeId }))
+
       setLastDataType(dataType)
       setLastObsDepth(obsDepth)
 
@@ -272,6 +290,10 @@ export function useAppHook() {
   )
 
   useEffect(() => {
+    console.log({ noDataFound })
+  }, [noDataFound])
+
+  useEffect(() => {
     if (active.length === 0) return
     if (!YEAR || data[active.at(-1)][dataType][obsDepth].year.length === 0)
       return
@@ -335,6 +357,12 @@ export function useAppHook() {
     setNoData(false)
   }, [])
 
+  useEffect(() => {
+    if (noDataFound.length > 0) {
+      setNoData(true)
+    }
+  }, [noDataFound])
+
   const addChartColor = useCallback(() => {
     const randomColor = `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(
       Math.random() * 255
@@ -378,5 +406,6 @@ export function useAppHook() {
     canvas,
     noData,
     handleSetNoData,
+    noDataFound,
   }
 }

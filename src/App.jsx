@@ -12,54 +12,59 @@ import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import { Header } from './components/header/Header'
 
 const SAppContainer = styled('div', {
-	display: 'flex',
-	width: '100ww',
-	height: '92vh',
+  display: 'flex',
+  width: '100ww',
+  height: '92vh',
 })
 
 const SMapChartContainer = styled('div', {
-	display: 'flex',
-	flexDirection: 'column',
-	height: '92vh',
-	width: '87vw',
-	position: 'relative',
+  display: 'flex',
+  flexDirection: 'column',
+  height: '92vh',
+  width: '87vw',
+  position: 'relative',
 })
 
 const Container = styled('div', {
-	backgroundColor: '$background',
-	color: '$text',
+  backgroundColor: '$background',
+  color: '$text',
 })
 const themeMap = {
-	light: null,
-	dark: darkTheme,
+  light: null,
+  dark: darkTheme,
 }
 const App = () => {
-	const {
-		toggleTheme,
-		theme,
-		showLakeInfo,
-		isOneLakeActive,
-		handleSetNoData,
-		handleCanvas,
-		canvas,
-		noData,
-	} = useAppHook()
-	return (
-		<Container className={themeMap[theme]}>
-			<Header toggleTheme={toggleTheme} theme={theme} />
-			{showLakeInfo && <LakeCard />}
-			<SAppContainer>
-				<Dashboard canvas={canvas} />
-				<SMapChartContainer>
-					{noData && (
-						<Modal isOpen={noData} handleSetNoData={handleSetNoData} />
-					)}
-					<Map isOneLakeActive={isOneLakeActive} />
-					{isOneLakeActive && <Chart handleCanvas={handleCanvas} />}
-				</SMapChartContainer>
-			</SAppContainer>
-		</Container>
-	)
+  const {
+    toggleTheme,
+    theme,
+    showLakeInfo,
+    isOneLakeActive,
+    handleSetNoData,
+    handleCanvas,
+    canvas,
+    noData,
+    noDataFound,
+  } = useAppHook()
+  return (
+    <Container className={themeMap[theme]}>
+      <Header toggleTheme={toggleTheme} theme={theme} />
+      {showLakeInfo && <LakeCard />}
+      <SAppContainer>
+        <Dashboard canvas={canvas} />
+        <SMapChartContainer>
+          {noData && (
+            <Modal
+              isOpen={noData}
+              handleSetNoData={handleSetNoData}
+              noDataFound={noDataFound}
+            />
+          )}
+          <Map isOneLakeActive={isOneLakeActive} />
+          {isOneLakeActive && <Chart handleCanvas={handleCanvas} />}
+        </SMapChartContainer>
+      </SAppContainer>
+    </Container>
+  )
 }
 
 export default App

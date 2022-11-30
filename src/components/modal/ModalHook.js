@@ -1,15 +1,14 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 
 export default function useMapHook({ isOpen, handleSetNoData }) {
-	const [open, setOpen] = useState(isOpen)
+  const [open, setOpen] = useState(isOpen)
+  const handleClose = useCallback(() => {
+    setOpen(!open)
+    handleSetNoData()
+  }, [setOpen])
 
-	const handleClose = useCallback(() => {
-		setOpen(!open)
-		handleSetNoData()
-	}, [setOpen])
-
-	return {
-		open,
-		handleClose,
-	}
+  return {
+    open,
+    handleClose,
+  }
 }
