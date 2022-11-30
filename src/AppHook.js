@@ -53,7 +53,6 @@ export function useAppHook() {
       }
       const allData = newAllData.every(el => el.length > 0)
       const noData = newAllData.every(el => el.length === 0)
-      console.log({ allData, noData })
       if (noData) {
         dispatch(removeLake({ id: lakeId }))
       }
@@ -102,7 +101,6 @@ export function useAppHook() {
           [volumeFullDates]: volumeDataFullDates[0],
         }
       }
-      console.log({ dataWB })
       dispatch(
         addData({
           id: lakeId,
@@ -119,179 +117,9 @@ export function useAppHook() {
 
       setLastDataType(dataType)
       setLastObsDepth(obsDepth)
-
-      // const referenceSeries = getSeriePathByAttribute(allSeriesPath, reference)
-      // const referenceSeriesRaw = await csv(referenceSeries).catch(err => {})
-      // const volumeCSV = [
-      //   (await getDataFormalized(volumeOpticDay, 'hm³')) || [],
-      //   (await getDataFormalized(volumeRadarDay, 'hm³')) || [],
-      // ]
-      // const firstDate = getFirstDateOfArrays(volumeCSV)
-      // const lastDate = getLastDateOfArrays(volumeCSV)
-      //
-      // const referenceSeriesFormalized =
-      //   referenceSeriesRaw && formatValue(referenceSeriesRaw)
-      //
-      // const surfaceZSV =
-      //   referenceSeriesFormalized &&
-      //   extractField([referenceSeriesFormalized], 'area')[0]
-      //
-      // const volumeZSV =
-      //   referenceSeriesFormalized &&
-      //   extractField([referenceSeriesFormalized], 'volume')[0]
-      //
-      // const rateRef = volumeZSV && getHighestValue([volumeZSV])
-      //
-      // const fillingRateZSV = rateRef && normalizeValue([volumeZSV], rateRef)[0]
-      //
-      // try {
-      //   const fillingRateDayRaw = [
-      //     (await getDataFormalized(fillingRateOpticDay, '%')) || [],
-      //     (await getDataFormalized(fillingRateRadarDay, '%')) || [],
-      //     fillingRateZSV || [],
-      //   ]
-      //   const fillingRatePeriodRaw = [
-      //     (await getDataFormalized(fillingRateOpticPeriod, '%')) || [],
-      //     (await getDataFormalized(fillingRateRadarPeriod, '%')) || [],
-      //     fillingRateZSV || [],
-      //   ]
-      //
-      //   const surfaceDayRaw = [
-      //     (await getDataFormalized(surfaceOpticDay, 'ha')) || [],
-      //     (await getDataFormalized(surfaceRadarDay, 'ha')) || [],
-      //     surfaceZSV || [],
-      //   ]
-      //   const surfacePeriodRaw = [
-      //     (await getDataFormalized(surfaceOpticPeriod, 'ha')) || [],
-      //     (await getDataFormalized(surfaceRadarPeriod, 'ha')) || [],
-      //     surfaceZSV || [],
-      //   ]
-      //   const volumeDayRaw = [
-      //     (await getDataFormalized(volumeOpticDay, 'hm³')) || [],
-      //     (await getDataFormalized(volumeRadarDay, 'hm³')) || [],
-      //     volumeZSV || [],
-      //   ]
-      //   const volumePeriodRaw = [
-      //     (await getDataFormalized(volumeOpticPeriod, 'hm³')) || [],
-      //     (await getDataFormalized(volumeRadarPeriod, 'hm³')) || [],
-      //     volumeZSV || [],
-      //   ]
-      //   const allData = [
-      //     ...fillingRateDayRaw,
-      //     ...fillingRatePeriodRaw,
-      //     ...surfaceDayRaw,
-      //     ...surfacePeriodRaw,
-      //     ...volumeDayRaw,
-      //     ...volumePeriodRaw,
-      //   ]
-      //   const noDataCount = arr => arr.filter(el => el.length === 0).length
-      //   let noDataLength = noDataCount(allData)
-      //   const allFillingRateData = [...fillingRateDayRaw, ...fillingRatePeriodRaw]
-      //   const allSurfaceData = [...surfaceDayRaw, ...surfacePeriodRaw]
-      //   const allVolumeData = [...volumeDayRaw, ...volumePeriodRaw]
-      //   if (
-      //     dataType === DataTypes.FILLING_RATE &&
-      //     noDataCount(allFillingRateData) === allFillingRateData.length
-      //   ) {
-      //     setNoData(true)
-      //   }
-      //
-      //   if (
-      //     dataType === DataTypes.SURFACE &&
-      //     noDataCount(allSurfaceData) === allSurfaceData.length
-      //   ) {
-      //     setNoData(true)
-      //   }
-      //
-      //   if (
-      //     dataType === DataTypes.VOLUME &&
-      //     noDataCount(allVolumeData) === allVolumeData.length
-      //   ) {
-      //     setNoData(true)
-      //   }
-      //
-      //   if (noDataLength === allData.length) {
-      //     setNoData(true)
-      //     dispatch(removeLake({ id }))
-      //   }
-      //
-      //   let fillingRateDayByYEar = []
-      //   let fillingRatePeriodByYear = []
-      //   if (fillingRateDayRaw.length > 0 && fillingRatePeriodRaw.length > 0) {
-      //     fillingRateDayByYEar = getDataByYear([fillingRateDayRaw])
-      //     fillingRatePeriodByYear = getDataByYear([fillingRatePeriodRaw])
-      //   }
-      //
-      //   let surfaceDayByYear = []
-      //   let surfacePeriodByYear = []
-      //   if (surfaceDayRaw?.length > 0 && surfacePeriodRaw?.length > 0) {
-      //     surfaceDayByYear = getDataByYear([surfaceDayRaw])
-      //     surfacePeriodByYear = getDataByYear([surfacePeriodRaw])
-      //   }
-      //
-      //   let volumeDayByYear = []
-      //   let volumePeriodByYear = []
-      //   let volumeDayFull = []
-      //   let volumePeriodFull = []
-      //
-      //   if (volumeDayRaw?.length > 0 && volumePeriodRaw?.length > 0) {
-      //     volumeDayByYear = getDataByYear([volumeDayRaw])
-      //     volumeDayFull = fillEmptyDataOfDate([volumeDayRaw])
-      //     volumePeriodByYear = getDataByYear([volumePeriodRaw])
-      //     volumePeriodFull = fillEmptyDataOfDate([volumePeriodRaw])
-      //   }
-      //
-      //   const fillingRate = {
-      //     [DurationTypes.DAY]: {
-      //       day: fillingRateDayRaw,
-      //       dayByYear: fillingRateDayByYEar[0],
-      //     },
-      //     [DurationTypes.PERIOD]: {
-      //       period: fillingRatePeriodRaw,
-      //       periodByYear: fillingRatePeriodByYear[0],
-      //     },
-      //   }
-      //   const surface = {
-      //     [DurationTypes.DAY]: {
-      //       day: surfaceDayRaw,
-      //       dayByYear: surfaceDayByYear[0],
-      //     },
-      //     [DurationTypes.PERIOD]: {
-      //       period: surfacePeriodRaw,
-      //       periodByYear: surfacePeriodByYear[0],
-      //     },
-      //   }
-      //
-      //   const volume = {
-      //     [DurationTypes.DAY]: {
-      //       day: volumeDayRaw,
-      //       dayByYear: volumeDayByYear[0],
-      //       dayFull: volumeDayFull[0],
-      //     },
-      //     [DurationTypes.PERIOD]: {
-      //       period: volumePeriodRaw,
-      //       periodByYear: volumePeriodByYear[0],
-      //       periodFull: volumePeriodFull[0],
-      //     },
-      //   }
-      //   if (
-      //     fillingRatePeriodRaw.length > 0 &&
-      //     surfacePeriodRaw.length > 0 &&
-      //     volumePeriodRaw.length > 0
-      //   ) {
-      //     dispatch(addData({ id, fillingRate, surface, volume }))
-      //     dispatch(addLakeChartOptions({ id }))
-      //   }
-      // } catch (err) {
-      //   console.log(err)
-      // }
     },
     [dispatch, active, dataType, obsDepth]
   )
-
-  useEffect(() => {
-    console.log({ noDataFound })
-  }, [noDataFound])
 
   useEffect(() => {
     if (active.length === 0) return
@@ -305,11 +133,12 @@ export function useAppHook() {
 
   useEffect(() => {
     if (
-      active.length === loaded.length ||
+      // active.length === loaded.length ||
       data[active.at(-1)]?.[dataType]?.[obsDepth]
     )
       return
     const lakeId = active.at(-1)
+    if (!lakeId) return
     handleData(lakeId)
   }, [active, data, dataType])
 

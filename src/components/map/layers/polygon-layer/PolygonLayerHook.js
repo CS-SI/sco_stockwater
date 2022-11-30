@@ -4,7 +4,10 @@ import { useSelector, useDispatch } from 'react-redux'
 import { addLake, updateActivelakes } from '@/stores/stateLakeSlice'
 import { updateModeVolume } from '../../../../stores/dataSlice'
 import { DataTypes, DurationTypes, ObservationTypes } from '../../../../config'
-import { addLakeChartOptions } from '../../../../stores/lakesChartOptionsSlice'
+import {
+  addLakeChartOptions,
+  toggleLakeChartSelection,
+} from '../../../../stores/lakesChartOptionsSlice'
 import { addYearsChartOptions } from '../../../../stores/yearsChartOptionsSlice'
 
 export default function usePolygonLayerHook() {
@@ -16,7 +19,7 @@ export default function usePolygonLayerHook() {
     coord: [],
   })
   const [obsDepth, setObsDepth] = useState(null)
-  const { YEAR, VOLUME, DAY, PERIOD, dataType } = useSelector(
+  const { YEAR, DAY, PERIOD, VOLUME, dataType } = useSelector(
     state => state.form
   )
   const { active } = useSelector(state => state.stateLake)
@@ -46,7 +49,7 @@ export default function usePolygonLayerHook() {
 
   const centerPolygon = useCallback(() => {
     map.setView(coordId.coord, 11)
-  }, [coordId.coord])
+  }, [coordId])
 
   useEffect(() => {
     if (active.length >= 2) return
@@ -61,6 +64,10 @@ export default function usePolygonLayerHook() {
     if (active.length === 0 && containerHeight !== '100%') {
       resizeMap('100%')
       setContainerHeight('100%')
+      setCoordId({
+        id: '',
+        coord: [],
+      })
     }
   }, [active.length, dataFromStore, dataType, obsDepth, resizeMap, coordId.id])
 
@@ -72,19 +79,19 @@ export default function usePolygonLayerHook() {
   }, [containerHeight])
 
   useEffect(() => {
-    if (!coordId.id) return
-    const container = document.getElementsByClassName('leaflet-container')
-    if (container[0].style.height == '45%' && active.length > 0) {
+    if (!lakesChartOptions[coordId.id] && containerHeight === '100%') return
+    if (containerHeight === '45%' && active.length > 0) {
       setColor('#CDF0EA')
+      map.invalidateSize(true)
       centerPolygon()
     }
-  }, [coordId.id, active])
+  }, [containerHeight, lakesChartOptions[coordId.id]])
 
   useEffect(() => {
     if (active.length < 1) {
       setColor('blue')
     }
-  }, [active])
+  }, [active.length])
 
   useEffect(() => {
     if (DAY) {
@@ -133,9 +140,14 @@ export default function usePolygonLayerHook() {
   )
 
   const updateLake = useCallback(
-    (id, obsDepth) => {
+    (id, coordWW, obsDepth) => {
+      setCoordId({
+        id: id.toString(),
+        coord: coordWW,
+      })
       dispatch(updateActivelakes({ id: id.toString() }))
       dispatch(addLakeChartOptions({ id: id.toString() }))
+      if (!VOLUME) return
       dispatch(updateModeVolume({ id: id.toString(), obsDepth }))
     },
 
@@ -163,5 +175,6 @@ export default function usePolygonLayerHook() {
     obsDepth,
     dataFromStore,
     dataType,
+    dispatch,
   }
 }

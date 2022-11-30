@@ -3,6 +3,7 @@ import { LayerGroup, Polygon, Tooltip } from 'react-leaflet'
 import { v4 as uuid } from '@lukeed/uuid'
 import { useState, useEffect } from 'react'
 import { PropTypes } from 'prop-types'
+import { toggleLakeChartSelection } from '../../../../stores/lakesChartOptionsSlice'
 
 export const PolygonLayer = ({ data }) => {
   const [layer, setLayer] = useState(null)
@@ -12,11 +13,11 @@ export const PolygonLayer = ({ data }) => {
     color,
     zoomLevel,
     active,
-    loaded,
     updateLake,
     obsDepth,
     dataFromStore,
     dataType,
+    dispatch,
   } = usePolygonLayerHook({
     data,
   })
@@ -45,7 +46,10 @@ export const PolygonLayer = ({ data }) => {
                   !active.includes(ID_SWOT) &&
                   dataFromStore[ID_SWOT]?.[dataType][obsDepth]
                 ) {
-                  updateLake(ID_SWOT, obsDepth)
+                  updateLake(ID_SWOT, [LAT_WW, LONG_WW], obsDepth)
+                }
+                if (active.includes(ID_SWOT)) {
+                  dispatch(toggleLakeChartSelection({ id: ID_SWOT }))
                 }
               },
             }}
@@ -57,7 +61,7 @@ export const PolygonLayer = ({ data }) => {
         )
       })
     )
-  }, [id, color, active, loaded])
+  }, [id, color])
 
   return <LayerGroup>{zoomLevel > 8 ? layer : null}</LayerGroup>
 }

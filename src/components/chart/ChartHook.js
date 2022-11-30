@@ -189,6 +189,7 @@ export default function useChartHook() {
         for (const id of active) {
           const dataRaw = data[id][dataType]?.[obsDepth]?.raw
           if (!dataRaw) return
+
           const dataActualized = handleObsType(dataRaw, OPTIC, RADAR, REFERENCE)
           dataTmp.push(dataActualized)
         }
@@ -205,7 +206,9 @@ export default function useChartHook() {
 
         dataTmp.push(dataActualized)
 
-        if (JSON.stringify(dataTmp) !== JSON.stringify(chartData)) {
+        if (
+          JSON.stringify(dataTmp.at(-1)) !== JSON.stringify(chartData.at(-1))
+        ) {
           if (chartData.length === 0 || lastMode === 'year') {
             setChartData(dataTmp)
           } else {
