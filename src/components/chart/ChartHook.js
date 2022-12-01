@@ -305,6 +305,7 @@ export default function useChartHook() {
 
   const setDataLines = useCallback(
     (item, obsType, index, lakeName, indexColor) => {
+      console.log({ lakeName })
       if (!item) return
       const { borderWidth } = chart.style.default
       let { tension, pointRadius } = AppConfig.attributes[dataType]
@@ -403,15 +404,17 @@ export default function useChartHook() {
 
     if (isSameDataType) {
       const indexColor = chartData.length - 1
-      chartData.at(-1).forEach((item, index) => {
+      chartData.at(-1).forEach(item => {
         item?.forEach((itm, idx) => {
           const data = setDataLines(
             itm,
             obsTypes[idx],
             idx,
             VOLUME
-              ? active.map(id => information.information[id].name)[index - 1]
-              : active.map(id => information.information[id].name)[index],
+              ? active.map(id => information.information[id].name)[
+                  indexColor - 1
+                ]
+              : active.map(id => information.information[id].name)[indexColor],
             indexColor
           )
           const itemDates = itm?.map(el => el.date)
