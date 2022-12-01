@@ -27,14 +27,28 @@ export const PolygonLayer = ({ data }) => {
       data.features.map(feature => {
         const { ID_SWOT, DAM_NAME, LONG_WW, LAT_WW } = feature.properties
         const { coordinates } = feature.geometry
-        const reversedMultiPolygons = coordinates[0].map(polygon =>
+
+        let coord
+        if (coordinates[0][0].length === 2) {
+          coord = Array.from([coordinates[0]])
+        } else {
+          coord = coordinates[0]
+        }
+        const reversedMultiPolygons = coord.map(polygon =>
           polygon.map(p => [p[1], p[0]])
         )
+        let polygonPositions
+
+        if (reversedMultiPolygons[0].length === 2) {
+          polygonPositions = Array.from([reversedMultiPolygons])
+        } else {
+          polygonPositions = reversedMultiPolygons
+        }
 
         return (
           <Polygon
             key={uuid()}
-            positions={reversedMultiPolygons}
+            positions={polygonPositions}
             color={ID_SWOT === id ? color : 'blue'}
             // eslint-disable-next-line react-perf/jsx-no-new-object-as-prop
             eventHandlers={{
