@@ -305,7 +305,6 @@ export default function useChartHook() {
 
   const setDataLines = useCallback(
     (item, obsType, index, lakeName, indexColor) => {
-      console.log({ lakeName })
       if (!item) return
       const { borderWidth } = chart.style.default
       let { tension, pointRadius } = AppConfig.attributes[dataType]

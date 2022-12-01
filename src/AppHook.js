@@ -51,7 +51,7 @@ export function useAppHook() {
       if (dataType === DataTypes.FILLING_RATE) {
         newfillingRateZSV = makeFillingRateZSVdata(formalizedData)
       }
-      const allData = newAllData.every(el => el.length > 0)
+
       const noData = newAllData.every(el => el.length === 0)
       if (noData) {
         dispatch(removeLake({ id: lakeId }))
@@ -172,8 +172,9 @@ export function useAppHook() {
 
   useEffect(() => {
     if (
-      active.length > 0 &&
-      data[active.at(-1)]?.[dataType]?.[obsDepth]?.raw[0].length > 0
+      (active.length > 0 &&
+        data[active.at(-1)]?.[dataType]?.[obsDepth]?.raw[0].length > 0) ||
+      data[active.at(-1)]?.[dataType]?.[obsDepth]?.raw[2].length > 0
     ) {
       setIsOneLakeActive(true)
     }

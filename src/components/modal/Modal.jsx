@@ -107,7 +107,7 @@ export const Modal = ({ isOpen, handleSetNoData, noDataFound }) => {
             <Message>
               No{' '}
               {noDataFound.map(el => {
-                if (noDataFound.length > 1 && noDataFound.length < 2) {
+                if (noDataFound.length > 1 && noDataFound.length <= 2) {
                   return el + ', '
                 } else if (noDataFound.length === 1) {
                   return el + ' '
