@@ -28,6 +28,7 @@ export default function useChartHook() {
   const [scales, setScales] = useState()
   const [options, setOptions] = useState()
   const [isSameDataType, setIsSameDataType] = useState(true)
+  const [isSameObsDepth, setIsSameObsDepth] = useState(true)
   const [lastMode, setLastMode] = useState('')
   const [datesOfYear, setDatesOfYear] = useState({})
   const form = useSelector(state => state.form)
@@ -109,18 +110,27 @@ export default function useChartHook() {
     if (VOLUME) return
     if (
       dataType !== lastDataType ||
-      JSON.stringify(obsTypes) !== JSON.stringify(lastObstypes)
+      JSON.stringify(obsTypes) !== JSON.stringify(lastObstypes) ||
+      obsDepth !== lastObsDepth
     ) {
       setChartData([])
       setDataSets([])
     }
-  }, [dataType, lastDataType, obsTypes, lastObstypes])
-
+  }, [dataType, lastDataType, obsTypes, lastObstypes, obsDepth, lastObsDepth])
+  useEffect(() => {
+    if (chartData.length === 0) setDataSets([])
+  }, [chartData.length])
   useEffect(() => {
     if (!VOLUME && lastDataType !== '' && dataType !== lastDataType) {
       setIsSameDataType(false)
     }
   }, [dataType, lastDataType])
+
+  useEffect(() => {
+    if (!VOLUME && lastObsDepth !== '' && obsDepth !== lastObsDepth) {
+      setIsSameObsDepth(false)
+    }
+  }, [obsDepth, lastObsDepth])
 
   useEffect(() => {
     if (zoomReset) {
@@ -177,24 +187,15 @@ export default function useChartHook() {
   }, [VOLUME, mode, obsTypes, obsDepth])
 
   useEffect(() => {
-    if (YEAR || VOLUME) return
+    if (
+      YEAR ||
+      VOLUME ||
+      (lastDataType && dataType !== lastDataType) ||
+      (lastObsDepth && obsDepth !== lastObsDepth)
+    )
+      return
     if (active.length > 0 && data[active.at(-1)]?.[dataType]?.[obsDepth]) {
       let dataTmp = []
-
-      if (
-        (lastDataType !== '' && dataType !== lastDataType) ||
-        (lastObsDepth !== '' && obsDepth !== lastObsDepth) ||
-        (lastMode === 'year' && active.length > 1)
-      ) {
-        for (const id of active) {
-          const dataRaw = data[id][dataType]?.[obsDepth]?.raw
-          if (!dataRaw) return
-
-          const dataActualized = handleObsType(dataRaw, OPTIC, RADAR, REFERENCE)
-          dataTmp.push(dataActualized)
-        }
-        setChartData(dataTmp)
-      }
       if (
         lastDataType === '' ||
         dataType === lastDataType ||
@@ -222,6 +223,32 @@ export default function useChartHook() {
       setLastObsDepth(obsDepth)
     }
   }, [active, data, dataType, obsDepth, obsTypes])
+
+  useEffect(() => {
+    if (YEAR || VOLUME || !data[active.at(-1)]?.[dataType]?.[obsDepth]) return
+    let dataTmp = []
+    if (
+      (lastDataType !== '' && dataType !== lastDataType) ||
+      (lastObsDepth !== '' && obsDepth !== lastObsDepth) ||
+      (lastMode === 'year' && active.length > 1)
+    ) {
+      for (const id of active) {
+        const dataRaw = data[id][dataType][obsDepth].raw
+        if (
+          !dataRaw
+          //   ||
+          // JSON.stringify(chartData[0]?.at(-1) === JSON.stringify(dataRaw))
+        )
+          return
+        const dataActualized = handleObsType(dataRaw, OPTIC, RADAR, REFERENCE)
+        dataTmp.push(dataActualized)
+      }
+      setChartData(dataTmp)
+    }
+    setLastDataType(dataType)
+    setLastObstypes(obsTypes)
+    setLastObsDepth(obsDepth)
+  }, [active, data, lastDataType, lastObsDepth, obsTypes, obsDepth])
 
   const handleObsType = useCallback(
     (data, optic, radar, reference) => {
@@ -401,7 +428,7 @@ export default function useChartHook() {
     const allDates = []
     let allDatesSorted = []
 
-    if (isSameDataType) {
+    if (isSameDataType && isSameObsDepth) {
       const indexColor = chartData.length - 1
       chartData.at(-1).forEach(item => {
         item?.forEach((itm, idx) => {
@@ -422,7 +449,10 @@ export default function useChartHook() {
         })
       })
     }
-    if (!VOLUME && !isSameDataType) {
+    if (
+      (!VOLUME && !isSameDataType && chartData.length === active.length) ||
+      (!VOLUME && !isSameObsDepth && chartData.length === active.length)
+    ) {
       chartData?.forEach((key, index) => {
         key?.forEach(item => {
           item?.forEach((itm, idx) => {

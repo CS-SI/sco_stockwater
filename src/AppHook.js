@@ -19,7 +19,7 @@ export function useAppHook() {
   const [isOneLakeActive, setIsOneLakeActive] = useState(false)
   const [theme, setTheme] = useState('dark')
   const [obsDepth, setObsDepth] = useState(DurationTypes.PERIOD)
-  const [lastObsDepth, setLastObsDepth] = useState(DurationTypes.PERIOD)
+  const [lastObsDepth, setLastObsDepth] = useState(null)
   const [lastDataType, setLastDataType] = useState(null)
   const [canvas, setCanvas] = useState(null)
   const [noData, setNoData] = useState(false)
@@ -133,20 +133,21 @@ export function useAppHook() {
 
   useEffect(() => {
     if (
-      // active.length === loaded.length ||
-      data[active.at(-1)]?.[dataType]?.[obsDepth]
+      data[active.at(-1)]?.[dataType]?.[obsDepth] ||
+      (lastDataType && dataType !== lastDataType) ||
+      (lastObsDepth && obsDepth !== lastObsDepth)
     )
       return
     const lakeId = active.at(-1)
     if (!lakeId) return
     handleData(lakeId)
-  }, [active, data, dataType])
+  }, [active, data, dataType, obsDepth])
 
   useEffect(() => {
     if (active.length <= 1) return
     if (dataType !== lastDataType || obsDepth !== lastObsDepth) {
       for (const lakeId of active) {
-        if (data[lakeId]?.[dataType]?.[obsDepth]) return
+        if (data[lakeId]?.[dataType]?.[obsDepth]) continue
         handleData(lakeId)
       }
     }
@@ -167,7 +168,6 @@ export function useAppHook() {
     if (PERIOD) {
       setObsDepth(DurationTypes.PERIOD)
     }
-    setLastObsDepth(obsDepth)
   }, [DAY, PERIOD])
 
   useEffect(() => {
