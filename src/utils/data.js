@@ -4,7 +4,7 @@ import {
   getAttributesFilepath,
   getAttributesUnit,
   getObservationTypesAbbr,
-  getDurationAbbr,
+  getDurationAbbr
 } from './config'
 import { getSeriePath } from './seriePath'
 import { DataTypes } from '../config'
@@ -39,9 +39,13 @@ const makeFillingRateZSVdata = volumeZSV => {
   return normalizeValue(volumeZSV, rateRef)
 }
 
+const isEqual = (a, b) => {
+  return JSON.stringify(a) === JSON.stringify(b)
+}
 export {
   getDataFormalized,
   getDataRaw,
   getReferenceSerieDataType,
   makeFillingRateZSVdata,
+  isEqual
 }

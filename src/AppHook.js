@@ -10,7 +10,7 @@ import {
   getDataFormalized,
   getDataRaw,
   getReferenceSerieDataType,
-  makeFillingRateZSVdata,
+  makeFillingRateZSVdata
 } from './utils/data'
 import { addLakeChartOptions } from './stores/lakesChartOptionsSlice'
 import { addYearsChartOptions } from './stores/yearsChartOptionsSlice'
@@ -34,6 +34,7 @@ export function useAppHook() {
   const handleData = useCallback(
     async lakeId => {
       if (data[lakeId]?.[dataType]?.[obsDepth]) return
+      console.log({ lakeId })
       const allSeriesPath = serPath[lakeId]
 
       const newAllData = await getDataRaw(allSeriesPath, form).catch({})
@@ -78,7 +79,7 @@ export function useAppHook() {
       const newData = [
         getDataFormalized(newAllData[0], dataType),
         getDataFormalized(newAllData[1], dataType),
-        newfillingRateZSV ? newfillingRateZSV : formalizedData,
+        newfillingRateZSV ? newfillingRateZSV : formalizedData
       ]
 
       if (dataType === DataTypes.VOLUME) {
@@ -92,13 +93,13 @@ export function useAppHook() {
 
       let dataWB = {
         [obsName]: newData,
-        [obsNameByYear]: dataByYear[0],
+        [obsNameByYear]: dataByYear[0]
       }
 
       if (dataType === DataTypes.VOLUME) {
         dataWB = {
           ...dataWB,
-          [volumeFullDates]: volumeDataFullDates[0],
+          [volumeFullDates]: volumeDataFullDates[0]
         }
       }
       dispatch(
@@ -109,7 +110,7 @@ export function useAppHook() {
           obsDepth,
           obsName,
           obsNameByYear,
-          volumeFullDates,
+          volumeFullDates
         })
       )
 
@@ -144,14 +145,14 @@ export function useAppHook() {
   }, [active, data, dataType, obsDepth])
 
   useEffect(() => {
-    if (active.length <= 1) return
+    if (!lastObsDepth || !lastDataType) return
     if (dataType !== lastDataType || obsDepth !== lastObsDepth) {
       for (const lakeId of active) {
         if (data[lakeId]?.[dataType]?.[obsDepth]) continue
         handleData(lakeId)
       }
     }
-  }, [active, obsDepth, lastObsDepth, dataType, lastDataType, data])
+  }, [obsDepth, lastObsDepth, dataType, lastDataType])
 
   const handleCanvas = useCallback(cvas => {
     setCanvas(cvas)
@@ -201,7 +202,7 @@ export function useAppHook() {
       addColor({
         dataType,
         obsType: ObservationTypes.OPTIC,
-        color: randomColor,
+        color: randomColor
       })
     )
     let newColor = randomColor.replace(/,[^,]+$/, ',0.66)')
@@ -209,7 +210,7 @@ export function useAppHook() {
       addColor({
         dataType,
         obsType: ObservationTypes.RADAR,
-        color: newColor,
+        color: newColor
       })
     )
     newColor = randomColor.replace(/,[^,]+$/, ',0.33)')
@@ -217,7 +218,7 @@ export function useAppHook() {
       addColor({
         dataType,
         obsType: ObservationTypes.REFERENCE,
-        color: newColor,
+        color: newColor
       })
     )
   }, [dataType])
@@ -236,6 +237,6 @@ export function useAppHook() {
     canvas,
     noData,
     handleSetNoData,
-    noDataFound,
+    noDataFound
   }
 }
