@@ -3,7 +3,9 @@ import { LayerGroup, Polygon, Tooltip } from 'react-leaflet'
 import { v4 as uuid } from '@lukeed/uuid'
 import { useState, useEffect } from 'react'
 import { PropTypes } from 'prop-types'
-import { toggleLakeChartSelection } from '../../../../stores/lakesChartOptionsSlice'
+import lakesChartOptionsSlice, {
+  toggleLakeChartSelection
+} from '../../../../stores/lakesChartOptionsSlice'
 
 export const PolygonLayer = ({ data }) => {
   const [layer, setLayer] = useState(null)
@@ -17,9 +19,9 @@ export const PolygonLayer = ({ data }) => {
     obsDepth,
     dataFromStore,
     dataType,
-    dispatch,
+    dispatch
   } = usePolygonLayerHook({
-    data,
+    data
   })
 
   useEffect(() => {
@@ -57,7 +59,8 @@ export const PolygonLayer = ({ data }) => {
                   activeLake(ID_SWOT, [LAT_WW, LONG_WW])
                 }
                 if (
-                  !active.includes(ID_SWOT) &&
+                  // !active.includes(ID_SWOT)
+                  //   &&
                   dataFromStore[ID_SWOT]?.[dataType][obsDepth]
                 ) {
                   updateLake(ID_SWOT, [LAT_WW, LONG_WW], obsDepth)
@@ -65,7 +68,7 @@ export const PolygonLayer = ({ data }) => {
                 if (active.includes(ID_SWOT)) {
                   dispatch(toggleLakeChartSelection({ id: ID_SWOT }))
                 }
-              },
+              }
             }}
           >
             <Tooltip>
@@ -80,5 +83,5 @@ export const PolygonLayer = ({ data }) => {
   return <LayerGroup>{zoomLevel > 8 ? layer : null}</LayerGroup>
 }
 PolygonLayer.propTypes = {
-  data: PropTypes.object.isRequired,
+  data: PropTypes.object.isRequired
 }

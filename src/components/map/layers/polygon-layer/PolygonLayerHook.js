@@ -6,7 +6,7 @@ import { updateModeVolume } from '../../../../stores/dataSlice'
 import { DataTypes, DurationTypes, ObservationTypes } from '../../../../config'
 import {
   addLakeChartOptions,
-  toggleLakeChartSelection,
+  toggleLakeChartSelection
 } from '../../../../stores/lakesChartOptionsSlice'
 import { addYearsChartOptions } from '../../../../stores/yearsChartOptionsSlice'
 
@@ -16,7 +16,7 @@ export default function usePolygonLayerHook() {
   const [containerHeight, setContainerHeight] = useState(null)
   const [coordId, setCoordId] = useState({
     id: '',
-    coord: [],
+    coord: []
   })
   const [obsDepth, setObsDepth] = useState(null)
   const { YEAR, DAY, PERIOD, VOLUME, dataType } = useSelector(
@@ -32,7 +32,7 @@ export default function usePolygonLayerHook() {
   const mapEvents = useMapEvents({
     zoomend: () => {
       setZoomLevel(mapEvents.getZoom())
-    },
+    }
   })
 
   const resizeMap = useCallback(
@@ -66,7 +66,7 @@ export default function usePolygonLayerHook() {
       setContainerHeight('100%')
       setCoordId({
         id: '',
-        coord: [],
+        coord: []
       })
     }
   }, [active.length, dataFromStore, dataType, obsDepth, resizeMap, coordId.id])
@@ -91,7 +91,7 @@ export default function usePolygonLayerHook() {
     if (active.length < 1) {
       setColor('blue')
     }
-  }, [active.length])
+  }, [active.length, lakesChartOptions])
 
   useEffect(() => {
     if (DAY) {
@@ -101,6 +101,11 @@ export default function usePolygonLayerHook() {
       setObsDepth(DurationTypes.PERIOD)
     }
   }, [DAY, PERIOD])
+  useEffect(() => {
+    if (!lakesChartOptions[coordId.id]) {
+      setColor('blue')
+    }
+  }, [lakesChartOptions])
 
   const centerSelectedPolygon = useCallback(() => {
     if (
@@ -120,7 +125,7 @@ export default function usePolygonLayerHook() {
     const { id, lakeCoord } = information[lakeId]
     setCoordId({
       id,
-      coord: lakeCoord,
+      coord: lakeCoord
     })
   }, [lakesChartOptions])
 
@@ -132,7 +137,7 @@ export default function usePolygonLayerHook() {
     (id, coordWW) => {
       setCoordId({
         id: id.toString(),
-        coord: coordWW,
+        coord: coordWW
       })
       dispatch(addLake({ id: id.toString() }))
     },
@@ -143,7 +148,7 @@ export default function usePolygonLayerHook() {
     (id, coordWW, obsDepth) => {
       setCoordId({
         id: id.toString(),
-        coord: coordWW,
+        coord: coordWW
       })
       dispatch(updateActivelakes({ id: id.toString() }))
       dispatch(addLakeChartOptions({ id: id.toString() }))
@@ -175,6 +180,6 @@ export default function usePolygonLayerHook() {
     obsDepth,
     dataFromStore,
     dataType,
-    dispatch,
+    dispatch
   }
 }

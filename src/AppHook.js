@@ -34,7 +34,6 @@ export function useAppHook() {
   const handleData = useCallback(
     async lakeId => {
       if (data[lakeId]?.[dataType]?.[obsDepth]) return
-      console.log({ lakeId })
       const allSeriesPath = serPath[lakeId]
 
       const newAllData = await getDataRaw(allSeriesPath, form).catch({})

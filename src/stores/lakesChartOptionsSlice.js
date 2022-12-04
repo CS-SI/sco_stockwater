@@ -10,7 +10,7 @@ export const lakesChartOptionsSlice = createSlice({
       state[id] = {
         visible: true,
         selected: false,
-        infoVisible: false,
+        infoVisible: false
       }
     },
     toggleLakeChartVisibility: (state, action) => {
@@ -19,6 +19,7 @@ export const lakesChartOptionsSlice = createSlice({
     },
     toggleLakeChartSelection: (state, action) => {
       const { id } = action.payload
+      if (!state[id]) return
       Object.entries(state).map(el => {
         if (el[0] !== id && el[1].selected) {
           el[1].selected = false
@@ -37,12 +38,14 @@ export const lakesChartOptionsSlice = createSlice({
     },
     removeLakeChartOptions: (state, action) => {
       const { id } = action.payload
+      state[id].selected = !state[id].selected
+
       delete state[id]
     },
     resetLakechartOptions: () => {
       return initialState
-    },
-  },
+    }
+  }
 })
 
 export const {
@@ -51,7 +54,7 @@ export const {
   toggleLakeChartSelection,
   toggleLakeChartInfoVisibility,
   removeLakeChartOptions,
-  resetLakechartOptions,
+  resetLakechartOptions
 } = lakesChartOptionsSlice.actions
 
 export default lakesChartOptionsSlice.reducer

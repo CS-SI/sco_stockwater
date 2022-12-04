@@ -19,6 +19,7 @@ import {
 } from '../../stores/chartDataLoadedSlice'
 import { isEqual } from '../../utils/data'
 import chartDataLoadedSlice from '../../stores/chartDataLoadedSlice'
+import OBSERVATION_TYPES from '../../config/ObservationTypes'
 
 export default function useChartHook() {
   const [chartData, setChartData] = useState([])
@@ -52,7 +53,6 @@ export default function useChartHook() {
     obsDepth: ''
   })
 
-  const [isReset, setIsReset] = useState(false)
   const form = useSelector(state => state.form)
   const chart = useSelector(state => state.chart)
   const { lakesChartOptions } = useSelector(state => state)
@@ -86,7 +86,7 @@ export default function useChartHook() {
       if (obs.types.includes(ObservationTypes.OPTIC)) return
       setObs(obs => ({
         depth: obs.depth,
-        types: [...obs.types, ObservationTypes.OPTIC]
+        types: [...obs.types, ObservationTypes.OPTIC].sort()
       }))
     }
     if (!OPTIC) {
@@ -103,7 +103,7 @@ export default function useChartHook() {
       if (obs.types.includes(ObservationTypes.RADAR)) return
       setObs(obs => ({
         depth: obs.depth,
-        types: [...obs.types, ObservationTypes.RADAR]
+        types: [...obs.types, ObservationTypes.RADAR].sort()
       }))
     }
     if (!RADAR) {
@@ -120,7 +120,7 @@ export default function useChartHook() {
       if (obs.types.includes(ObservationTypes.REFERENCE)) return
       setObs(obs => ({
         depth: obs.depth,
-        types: [...obs.types, ObservationTypes.REFERENCE]
+        types: [...obs.types, ObservationTypes.REFERENCE].sort()
       }))
     }
     if (!REFERENCE) {
@@ -172,7 +172,6 @@ export default function useChartHook() {
 
   useEffect(() => {
     if (obs.depth === lastFormOptions.lastObsDepth) {
-      console.log(obs.depth, lastFormOptions.lastObsDepth)
       setIsSame(el => ({
         dataType: el.dataType,
         obsDepth: true
@@ -195,7 +194,6 @@ export default function useChartHook() {
       formOptions.dataType !== lastFormOptions.lastDataType ||
       formOptions.obs.depth !== lastFormOptions.lastObsDepth
     ) {
-      console.log('IN IN')
       setIsReset(true)
       dispatch(resetLakeLoaded())
     }
@@ -220,13 +218,23 @@ export default function useChartHook() {
   }, [obs])
 
   useEffect(() => {
-    console.log({ isReset })
-    if (isReset) {
-      console.log({}, 'RESET', isReset)
+    if (
+      lastFormOptions.lastObstypes !== formOptions.obstypes ||
+      lastFormOptions.lastObsDepth !== formOptions.obsDepth ||
+      dataType !== lastFormOptions.lastDataType
+    ) {
       setChartData([])
       setDataSets([])
+      dispatch(resetLakeLoaded())
     }
-  }, [isReset])
+  }, [
+    lastFormOptions.lastObsDepth,
+    lastFormOptions.lastObstypes,
+    lastFormOptions.lastDataType,
+    formOptions.obsDepth,
+    formOptions.obstypes,
+    dataType
+  ])
 
   useEffect(() => {
     if (zoomReset) {
@@ -234,8 +242,9 @@ export default function useChartHook() {
       dispatch(handleResetZoom({ zoom: false }))
     }
   }, [zoomReset])
+
   useEffect(() => {
-    if (indexToRemoveFromChartData !== -1) {
+    if (indexToRemoveFromChartData) {
       const newChartData = [...chartData]
       newChartData.splice(indexToRemoveFromChartData, 1)
       setChartData(newChartData)
@@ -243,45 +252,34 @@ export default function useChartHook() {
   }, [indexToRemoveFromChartData])
 
   useEffect(() => {
-    // if (lakesLoaded?.[active.at(-1)]?.[dataType][obs.depth]) return
+    if ((YEAR || VOLUME) && !data[active.at(-1)][dataType]) return
     if (!obs.depth && lakesLoaded?.[active.at(-1)]?.[dataType][obs.depth])
       return
-    console.log('++++++++++++++++++', data[active.at(-1)][dataType][obs.depth])
-    if (
-      (YEAR || VOLUME) &&
-      !data[active.at(-1)]?.[dataType]?.[obs.depth]?.raw.length === 0
-    )
-      return
+    if (!data[active.at(-1)]?.[dataType]?.[obs.depth]?.raw) return
     let dataTmp = []
-    // const id = active.at(-1)
-    // const dataRaw = data[id]?.[dataType]?.[obs.depth]?.raw
-    // if (!dataRaw) return
-    // const dataActualized = handleObsType(dataRaw, OPTIC, RADAR, REFERENCE)
 
-    // dataTmp.push(dataActualized)
-
-    // if (chartData.length === 0 || lastFormOptions.lastMode === 'year') {
-    //   setChartData(dataTmp)
-    // } else {
-    //   setChartData([...chartData, ...dataTmp])
-    // }
     for (const id of active) {
-      const dataRaw = data[id][dataType][obs.depth]?.raw
-      console.log('AVANT ', id)
+      const dataRaw = data[id]?.[dataType]?.[obs.depth]?.raw
       if (!dataRaw) return
-      console.log('lakesLoaded', lakesLoaded?.[id])
-      if (lakesLoaded?.[id]?.[dataType]?.[obs.depth]) continue
-      console.log('APRES ', id)
+      if (
+        (lakesLoaded?.[id]?.[dataType]?.[obs.depth] &&
+          lastFormOptions.lastObstypes === obs.types) ||
+        lastFormOptions.lastObsDepth === obs.depth ||
+        dataType === lastFormOptions.lastDataType
+      )
+        continue
       const dataActualized = handleObsType(dataRaw, OPTIC, RADAR, REFERENCE)
       dataTmp.push(dataActualized)
       dispatch(addLakeLoaded({ id, dataType, obsDepth: obs.depth }))
     }
-    console.log('dataTmp', dataTmp)
-    if (chartData.length === 0 || lastFormOptions.lastMode === 'year') {
+    if (
+      chartData.length === 0 ||
+      lastFormOptions.lastObstypes !== obs.types ||
+      lastFormOptions.lastObsDepth !== obs.depth ||
+      dataType !== formOptions.dataType
+    ) {
       setChartData(dataTmp)
-      console.log('1')
     } else {
-      console.log('2')
       setChartData([...chartData, ...dataTmp])
     }
     if (
@@ -299,28 +297,71 @@ export default function useChartHook() {
         obstypes: obs.types
       })
     }
-    setIsReset(false)
-  }, [data, obs.depth])
+  }, [active, data, obs.depth, obs.types, dataType, YEAR])
 
   useEffect(() => {
-    console.log('FORM', formOptions)
-  }, [formOptions])
+    if (!VOLUME || YEAR) return
+    const dataVolume = mode.volume.raw
+    const dataVolumeActualized = handleObsType(
+      dataVolume,
+      OPTIC,
+      RADAR,
+      REFERENCE
+    )
+
+    setChartData([dataVolumeActualized])
+    if (
+      obs.depth !== formOptions.obsDepth ||
+      dataType !== formOptions.dataType ||
+      obs.types !== formOptions.obstypes
+    ) {
+      setLastFormOptions({
+        ...formOptions
+      })
+      setFormOptions({
+        mode: 'volume',
+        dataType,
+        obsDepth: obs.depth,
+        obstypes: obs.types
+      })
+    }
+  }, [VOLUME, mode, obs.depth, obs.types, dataType])
 
   useEffect(() => {
-    console.log('LAST', lastFormOptions)
-  }, [lastFormOptions])
+    if (
+      active.length > 0 &&
+      data[active.at(-1)]?.[dataType]?.[obs.depth]?.year
+    ) {
+      if (YEAR) {
+        const dataYear = Object.values(
+          data[active.at(-1)][dataType][obs.depth].year
+        )
+        const dataYearActualized = handleObsTypeYearMode(
+          dataYear,
+          OPTIC,
+          RADAR,
+          REFERENCE
+        )
 
-  useEffect(() => {
-    console.log('SAME', isSame)
-  }, [isSame])
-
-  useEffect(() => {
-    console.log('chartData', chartData)
-  }, [chartData])
-
-  useEffect(() => {
-    console.log('dataSets', dataSets)
-  }, [dataSets])
+        setChartData(dataYearActualized)
+        if (
+          obs.depth !== formOptions.obsDepth ||
+          dataType !== formOptions.dataType ||
+          obs.types !== formOptions.obstypes
+        ) {
+          setLastFormOptions({
+            ...formOptions
+          })
+          setFormOptions({
+            mode: 'year',
+            dataType,
+            obsDepth: obs.depth,
+            obstypes: obs.types
+          })
+        }
+      }
+    }
+  }, [YEAR, data, obs.depth, obs.types, dataType])
 
   const setDataLines = useCallback(
     (item, obsType, index, lakeName, indexColor) => {
@@ -669,68 +710,83 @@ export default function useChartHook() {
   }, [yearsChartOptions])
 
   useEffect(() => {
-    if (chartData.length === 0) return
+    if (chartData.length === 0 || YEAR) return
 
     const arrTmp = []
     const allDates = []
     let allDatesSorted = []
 
-    const indexColor = chartData.length - 1
-    chartData.at(-1).forEach(item => {
-      item?.forEach((itm, idx) => {
-        const data = setDataLines(
-          itm,
-          obs.types[idx],
-          idx,
-          VOLUME
-            ? active.map(id => information.information[id].name)[indexColor - 1]
-            : active.map(id => information.information[id].name)[indexColor],
-          indexColor
-        )
-        const itemDates = itm?.map(el => el.date)
-        if (itemDates) allDates.push(...itemDates)
-        arrTmp.push(data)
+    chartData?.forEach((key, index) => {
+      key?.forEach(item => {
+        item?.forEach((itm, idx) => {
+          const data = setDataLines(
+            itm,
+            obs.types[idx],
+            idx,
+            VOLUME
+              ? active.map(id => information.information[id].name)[index - 1]
+              : active.map(id => information.information[id].name)[index],
+            index
+          )
+          const itemDates = itm?.map(el => el.date)
+          if (itemDates) allDates.push(...itemDates)
+          arrTmp.push(data)
+        })
       })
     })
-    // if (
-    //   (!VOLUME && !isSameDataType && chartData.length === active.length) ||
-    //   (!VOLUME && !isSameObsDepth && chartData.length === active.length)
-    // ) {
-    //   chartData?.forEach((key, index) => {
-    //     key?.forEach(item => {
-    //       item?.forEach((itm, idx) => {
-    //         const data = setDataLines(
-    //           itm,
-    //           obsTypes[idx],
-    //           idx,
-    //           VOLUME
-    //             ? active.map(id => information.information[id].name)[index - 1]
-    //             : active.map(id => information.information[id].name)[index],
-    //           index
-    //         )
-    //         const itemDates = itm?.map(el => el.date)
-    //         if (itemDates) allDates.push(...itemDates)
-    //         arr.push(data)
-    //       })
-    //     })
-    //   })
-    // }
 
     allDatesSorted = allDates.sort((a, b) => new Date(a) - new Date(b))
     const firstDateGraph = getChartStartDateCurrentMonth(allDatesSorted[0])
     setDateMin(firstDateGraph)
     const lastDateGraph = getChartFirstDateNextMonth(allDatesSorted.at(-1))
     setDateMax(lastDateGraph)
-    if (!isEqual([...arrTmp], dataSets)) {
-      if (lastFormOptions.lastMode === 'year' || VOLUME) {
-        setDataSets([...arrTmp])
-      } else {
-        setDataSets([...dataSets, ...arrTmp])
-      }
-    }
 
-    arrTmp.length = 0
+    setDataSets(arrTmp)
   }, [chartData, charType])
+
+  useEffect(() => {
+    if (!YEAR) return
+    const arr = []
+    if (Object.keys(yearsChartOptions).length === chartData[0]?.length) {
+      const arrDate = []
+      chartData.forEach(year => {
+        Object.values(year).forEach((obs, index) => {
+          obs.forEach((itm, idx) => {
+            const data = setDataLines(
+              itm[0],
+              formOptions.obstypes[idx],
+              index,
+              information.information[active.at(-1)].name,
+              index
+            )
+            const dateBegin = itm[0][0].date
+            const dateEnd = itm[0].at(-1).date
+            arrDate.push(dateBegin, dateEnd)
+            arr.push(data)
+          })
+        })
+      })
+      const years = arrDate.map(date => new Date(date).getFullYear())
+
+      const normalizeDateSorted = arrDate
+        .map(el => el.replace(/\d{4}/, '2022'))
+        .sort((a, b) => new Date(a) - new Date(b))
+
+      const obj = {}
+      const objAllDatesByYear = () => {
+        years.map(year => {
+          return (obj[year] = {
+            start: normalizeDateSorted[0].replace(/\d{4}/, year),
+            end: normalizeDateSorted.at(-1).replace(/\d{4}/, year)
+          })
+        })
+      }
+      objAllDatesByYear()
+
+      setDatesOfYear(obj)
+      setDataSets(arr)
+    }
+  }, [YEAR, chartData, charType])
 
   const dataChart = {
     datasets: dataSets
