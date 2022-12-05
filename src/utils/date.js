@@ -126,6 +126,7 @@ export const fillEmptyDataOfDate = arr => {
   let arrTmp = []
   const obsTypes = arr[0]?.map(obs => obs)
   const obsTypesDateFiltered = obsTypes.map(obs => {
+    if (obs.length === 0) return []
     return obs?.filter(el => {
       return (
         el.date >= new Date(startingDate[0]).toISOString().slice(0, 10) &&
@@ -134,6 +135,7 @@ export const fillEmptyDataOfDate = arr => {
     })
   })
   obsTypesDateFiltered.forEach(obs => {
+    if (obs.length === 0) return []
     arrOfDates.forEach(date => {
       if (obs?.map(el => el.date).includes(date)) {
         value = obs.filter(el => el.date === date).map(el => el.value)[0]

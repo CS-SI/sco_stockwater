@@ -7,9 +7,9 @@ const initialState = {
   loaded: [],
   mode: {
     volume: {
-      raw: []
-    }
-  }
+      raw: [],
+    },
+  },
 }
 
 export const dataSlice = createSlice({
@@ -24,7 +24,7 @@ export const dataSlice = createSlice({
         obsDepth,
         obsName,
         obsNameByYear,
-        volumeFullDates
+        volumeFullDates,
       } = action.payload
       if (state.data[id]?.[dataType]?.[obsDepth]) return
       // !Exist
@@ -33,9 +33,9 @@ export const dataSlice = createSlice({
           [dataType]: {
             [DurationTypes[obsDepth]]: {
               raw: dataWB[obsName],
-              year: dataWB[obsNameByYear]
-            }
-          }
+              year: dataWB[obsNameByYear],
+            },
+          },
         }
       }
 
@@ -45,8 +45,8 @@ export const dataSlice = createSlice({
           ...state.data[id][dataType],
           [DurationTypes[obsDepth]]: {
             raw: dataWB[obsName],
-            year: dataWB[obsNameByYear]
-          }
+            year: dataWB[obsNameByYear],
+          },
         }
       }
 
@@ -58,10 +58,10 @@ export const dataSlice = createSlice({
 
       state.data[id][dataType][obsDepth] = {
         ...state.data[id][dataType][obsDepth],
-        full: dataWB[volumeFullDates]
+        full: dataWB[volumeFullDates],
       }
 
-      if (state.mode.volume.raw.length === 0) {
+      if (!state.mode.volume.raw || state.mode.volume.raw.length === 0) {
         state.mode.volume.raw = dataWB[volumeFullDates]
       } else {
         const modeVolumeFirstDate = state.mode.volume.raw[0][0].date
@@ -98,7 +98,7 @@ export const dataSlice = createSlice({
             if (el.date === date) {
               return {
                 date: el.date,
-                value: el.value + value
+                value: el.value + value,
               }
             }
           })
@@ -130,7 +130,7 @@ export const dataSlice = createSlice({
             if (el.date == date) {
               return {
                 date: el.date,
-                value: el.value > value ? el.value - value : value - el.value
+                value: el.value > value ? el.value - value : value - el.value,
               }
             }
           })
@@ -177,7 +177,7 @@ export const dataSlice = createSlice({
             if (el.date === date) {
               return {
                 date: el.date,
-                value: el.value + value
+                value: el.value + value,
               }
             }
           })
@@ -186,16 +186,16 @@ export const dataSlice = createSlice({
     },
     resetModeVolume: state => {
       state.mode.volume = {
-        raw: []
+        raw: [],
       }
-    }
-  }
+    },
+  },
 })
 export const {
   addData,
   removeDataFromVolume,
   updateModeVolume,
-  resetModeVolume
+  resetModeVolume,
 } = dataSlice.actions
 
 export default dataSlice.reducer

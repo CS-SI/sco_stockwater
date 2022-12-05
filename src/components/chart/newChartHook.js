@@ -5,17 +5,17 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import { handleResetZoom } from '../../stores/chartSlice'
 import {
   getChartStartDateCurrentMonth,
-  getChartFirstDateNextMonth
+  getChartFirstDateNextMonth,
 } from '../../utils/date'
 import {
   handleDataSetsBooleanOption,
   handleDataSetsBorderWidthOption,
   handleObsType,
-  handleObsTypeYearMode
+  handleObsTypeYearMode,
 } from '../../utils/chart'
 import {
   addLakeLoaded,
-  resetLakeLoaded
+  resetLakeLoaded,
 } from '../../stores/chartDataLoadedSlice'
 import { isEqual } from '../../utils/data'
 import chartDataLoadedSlice from '../../stores/chartDataLoadedSlice'
@@ -31,26 +31,26 @@ export default function useChartHook() {
   const [options, setOptions] = useState()
   const [obs, setObs] = useState({
     types: [],
-    depth: ''
+    depth: '',
   })
 
   const [formOptions, setFormOptions] = useState({
     dataType: '',
     obsDepth: '',
     mode: '',
-    obstypes: []
+    obstypes: [],
   })
 
   const [lastFormOptions, setLastFormOptions] = useState({
     lastDataType: '',
     lastObsDepth: '',
     lastMode: '',
-    lastObstypes: []
+    lastObstypes: [],
   })
 
   const [isSame, setIsSame] = useState({
     dataType: '',
-    obsDepth: ''
+    obsDepth: '',
   })
 
   const form = useSelector(state => state.form)
@@ -67,7 +67,7 @@ export default function useChartHook() {
     REFERENCE,
     YEAR,
     VOLUME,
-    charType
+    charType,
   } = form
 
   const { label, unit } = AppConfig.attributes[dataType]
@@ -86,14 +86,14 @@ export default function useChartHook() {
       if (obs.types.includes(ObservationTypes.OPTIC)) return
       setObs(obs => ({
         depth: obs.depth,
-        types: [...obs.types, ObservationTypes.OPTIC].sort()
+        types: [...obs.types, ObservationTypes.OPTIC].sort(),
       }))
     }
     if (!OPTIC) {
       if (!obs.types.includes(ObservationTypes.OPTIC)) return
       setObs(obs => ({
         depth: obs.depth,
-        types: obs.types.filter(el => el !== ObservationTypes.OPTIC)
+        types: obs.types.filter(el => el !== ObservationTypes.OPTIC),
       }))
     }
   }, [OPTIC])
@@ -103,14 +103,14 @@ export default function useChartHook() {
       if (obs.types.includes(ObservationTypes.RADAR)) return
       setObs(obs => ({
         depth: obs.depth,
-        types: [...obs.types, ObservationTypes.RADAR].sort()
+        types: [...obs.types, ObservationTypes.RADAR].sort(),
       }))
     }
     if (!RADAR) {
       if (!obs.types.includes(ObservationTypes.RADAR)) return
       setObs(obs => ({
         depth: obs.depth,
-        types: obs.types.filter(el => el !== ObservationTypes.RADAR)
+        types: obs.types.filter(el => el !== ObservationTypes.RADAR),
       }))
     }
   }, [RADAR])
@@ -120,14 +120,14 @@ export default function useChartHook() {
       if (obs.types.includes(ObservationTypes.REFERENCE)) return
       setObs(obs => ({
         depth: obs.depth,
-        types: [...obs.types, ObservationTypes.REFERENCE].sort()
+        types: [...obs.types, ObservationTypes.REFERENCE].sort(),
       }))
     }
     if (!REFERENCE) {
       if (!obs.types.includes(ObservationTypes.REFERENCE)) return
       setObs(obs => ({
         depth: obs.depth,
-        types: obs.types.filter(el => el !== ObservationTypes.REFERENCE)
+        types: obs.types.filter(el => el !== ObservationTypes.REFERENCE),
       }))
     }
   }, [REFERENCE])
@@ -136,7 +136,7 @@ export default function useChartHook() {
     if (!OPTIC && !RADAR && !REFERENCE) {
       setObs(obs => ({
         depth: obs.depth,
-        types: []
+        types: [],
       }))
       setChartData([])
     }
@@ -146,13 +146,13 @@ export default function useChartHook() {
     if (DAY) {
       setObs(obs => ({
         types: [...obs.types],
-        depth: DurationTypes.DAY
+        depth: DurationTypes.DAY,
       }))
     }
     if (PERIOD) {
       setObs(obs => ({
         types: [...obs.types],
-        depth: DurationTypes.PERIOD
+        depth: DurationTypes.PERIOD,
       }))
     }
   }, [DAY, PERIOD])
@@ -174,7 +174,7 @@ export default function useChartHook() {
     if (obs.depth === lastFormOptions.lastObsDepth) {
       setIsSame(el => ({
         dataType: el.dataType,
-        obsDepth: true
+        obsDepth: true,
       }))
     }
   }, [obs.depth, lastFormOptions.lastObsDepth])
@@ -183,7 +183,7 @@ export default function useChartHook() {
     if (dataType === lastFormOptions.lastDataType) {
       setIsSame(el => ({
         obsDepth: el.obsDepth,
-        dataType: true
+        dataType: true,
       }))
     }
   }, [dataType, lastFormOptions.lastDataType])
@@ -201,19 +201,19 @@ export default function useChartHook() {
     obs.depth,
     dataType,
     lastFormOptions.lastDataType,
-    lastFormOptions.lastObsDepth
+    lastFormOptions.lastObsDepth,
   ])
 
   useEffect(() => {
     if (!formOptions.mode) return
     setLastFormOptions({
-      ...formOptions
+      ...formOptions,
     })
     setFormOptions(opt => ({
       mode: opt.mode,
       dataType: opt.dataType,
       obsDepth: obs.depth,
-      obstypes: obs.types
+      obstypes: obs.types,
     }))
   }, [obs])
 
@@ -233,7 +233,7 @@ export default function useChartHook() {
     lastFormOptions.lastDataType,
     formOptions.obsDepth,
     formOptions.obstypes,
-    dataType
+    dataType,
   ])
 
   useEffect(() => {
@@ -252,7 +252,7 @@ export default function useChartHook() {
   }, [indexToRemoveFromChartData])
 
   useEffect(() => {
-    if ((YEAR || VOLUME) && !data[active.at(-1)][dataType]) return
+    if ((YEAR || VOLUME) && !data[active.at(-1)]?.[dataType]) return
     if (!obs.depth && lakesLoaded?.[active.at(-1)]?.[dataType][obs.depth])
       return
     if (!data[active.at(-1)]?.[dataType]?.[obs.depth]?.raw) return
@@ -288,13 +288,13 @@ export default function useChartHook() {
       obs.types !== formOptions.obstypes
     ) {
       setLastFormOptions({
-        ...formOptions
+        ...formOptions,
       })
       setFormOptions({
         mode: 'normal',
         dataType,
         obsDepth: obs.depth,
-        obstypes: obs.types
+        obstypes: obs.types,
       })
     }
   }, [active, data, obs.depth, obs.types, dataType, YEAR])
@@ -316,13 +316,13 @@ export default function useChartHook() {
       obs.types !== formOptions.obstypes
     ) {
       setLastFormOptions({
-        ...formOptions
+        ...formOptions,
       })
       setFormOptions({
         mode: 'volume',
         dataType,
         obsDepth: obs.depth,
-        obstypes: obs.types
+        obstypes: obs.types,
       })
     }
   }, [VOLUME, mode, obs.depth, obs.types, dataType])
@@ -350,13 +350,13 @@ export default function useChartHook() {
           obs.types !== formOptions.obstypes
         ) {
           setLastFormOptions({
-            ...formOptions
+            ...formOptions,
           })
           setFormOptions({
             mode: 'year',
             dataType,
             obsDepth: obs.depth,
-            obstypes: obs.types
+            obstypes: obs.types,
           })
         }
       }
@@ -434,7 +434,7 @@ export default function useChartHook() {
         pointRadius,
         tension,
         xAxisID,
-        hidden: isHidden()
+        hidden: isHidden(),
       }
     },
     [
@@ -445,7 +445,7 @@ export default function useChartHook() {
       unit,
       YEAR,
       lakesChartOptions,
-      yearsChartOptions
+      yearsChartOptions,
     ]
   )
   const makesScalesForyear = useCallback((isDisplay, startDate, endDate) => {
@@ -458,10 +458,10 @@ export default function useChartHook() {
       time: {
         displayFormats: {
           month: 'MMM yyyy',
-          day: 'dd MMM'
+          day: 'dd MMM',
         },
-        tooltipFormat: 'dd MMM yyyy'
-      }
+        tooltipFormat: 'dd MMM yyyy',
+      },
     }
     return obj
   }, [])
@@ -494,14 +494,14 @@ export default function useChartHook() {
           time: {
             displayFormats: {
               month: 'MMM yyyy',
-              day: 'dd MMM'
+              day: 'dd MMM',
             },
-            tooltipFormat: 'dd MMM yyyy'
-          }
+            tooltipFormat: 'dd MMM yyyy',
+          },
         },
         y: {
-          beginAtZero: true
-        }
+          beginAtZero: true,
+        },
       })
     }
   }, [dateMin, dateMax])
@@ -513,7 +513,7 @@ export default function useChartHook() {
       maintainAspectRatio: false,
       interaction: {
         intersect: false,
-        mode: 'nearest'
+        mode: 'nearest',
       },
       plugins: {
         title: {
@@ -521,12 +521,12 @@ export default function useChartHook() {
           text: `${label}  (${unit})`,
           position: 'top',
           font: {
-            size: 16
+            size: 16,
           },
           padding: {
             top: 10,
-            bottom: 10
-          }
+            bottom: 10,
+          },
         },
         tooltip: {
           callbacks: {
@@ -571,52 +571,52 @@ export default function useChartHook() {
                   return ` ${name}: ${value} ${unit}`
                 })
               }
-            }
-          }
+            },
+          },
         },
         legend: {
-          display: false
+          display: false,
           // position: "top",
           // labels: { font: { size: 14 } },
         },
         zoom: {
           pan: {
             enabled: true,
-            modifierKey: 'ctrl'
+            modifierKey: 'ctrl',
             // onPanStart: chart => {
             //   chart.event.changedPointers[0].target.style.cursor = "grab"
             // },
           },
           zoom: {
             wheel: {
-              enabled: true
+              enabled: true,
             },
             drag: {
               enabled: true,
               backgroundColor: 'rgba(0,204,255,0.15)',
               borderColor: 'rgba(0,204,255,1.00)',
-              borderWidth: 1
+              borderWidth: 1,
             },
             pinch: {
-              enabled: true
+              enabled: true,
             },
-            mode: 'xy'
+            mode: 'xy',
           },
           limits: {
             y: { min: 0, max: 'original' },
-            x: { min: 'original', max: 'original' }
-          }
-        }
+            x: { min: 'original', max: 'original' },
+          },
+        },
       },
       scales,
       y: {
-        beginAtZero: true
+        beginAtZero: true,
       },
       parsing: {
         xAxisKey: 'date',
-        yAxisKey: 'value'
+        yAxisKey: 'value',
       },
-      animation: false
+      animation: false,
     }
     setOptions(chartOptions)
   }, [scales, label, unit, VOLUME, data, active])
@@ -777,7 +777,7 @@ export default function useChartHook() {
         years.map(year => {
           return (obj[year] = {
             start: normalizeDateSorted[0].replace(/\d{4}/, year),
-            end: normalizeDateSorted.at(-1).replace(/\d{4}/, year)
+            end: normalizeDateSorted.at(-1).replace(/\d{4}/, year),
           })
         })
       }
@@ -789,7 +789,7 @@ export default function useChartHook() {
   }, [YEAR, chartData, charType])
 
   const dataChart = {
-    datasets: dataSets
+    datasets: dataSets,
   }
 
   return {
@@ -797,6 +797,6 @@ export default function useChartHook() {
     options,
     form,
     charType,
-    chartRef
+    chartRef,
   }
 }

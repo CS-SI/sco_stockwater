@@ -10,7 +10,7 @@ import {
   getDataFormalized,
   getDataRaw,
   getReferenceSerieDataType,
-  makeFillingRateZSVdata
+  makeFillingRateZSVdata,
 } from './utils/data'
 import { addLakeChartOptions } from './stores/lakesChartOptionsSlice'
 import { addYearsChartOptions } from './stores/yearsChartOptionsSlice'
@@ -38,18 +38,21 @@ export function useAppHook() {
 
       const newAllData = await getDataRaw(allSeriesPath, form).catch({})
 
-      let dataZSV
-      let newfillingRateZSV
-      let volumeDataFullDates
-      if (dataType === DataTypes.FILLING_RATE) {
-        dataZSV = getReferenceSerieDataType(newAllData[2], DataTypes.VOLUME)
-      } else {
-        dataZSV = getReferenceSerieDataType(newAllData[2], dataType)
-      }
-      const formalizedData = getDataFormalized(dataZSV, dataType)
+      let dataZSV = []
+      let newfillingRateZSV = []
+      let volumeDataFullDates = []
+      let formalizedData = []
+      if (newAllData[2].length > 0) {
+        if (dataType === DataTypes.FILLING_RATE) {
+          dataZSV = getReferenceSerieDataType(newAllData[2], DataTypes.VOLUME)
+        } else {
+          dataZSV = getReferenceSerieDataType(newAllData[2], dataType)
+        }
+        formalizedData = getDataFormalized(dataZSV, dataType)
 
-      if (dataType === DataTypes.FILLING_RATE) {
-        newfillingRateZSV = makeFillingRateZSVdata(formalizedData)
+        if (dataType === DataTypes.FILLING_RATE) {
+          newfillingRateZSV = makeFillingRateZSVdata(formalizedData)
+        }
       }
 
       const noData = newAllData.every(el => el.length === 0)
@@ -78,9 +81,8 @@ export function useAppHook() {
       const newData = [
         getDataFormalized(newAllData[0], dataType),
         getDataFormalized(newAllData[1], dataType),
-        newfillingRateZSV ? newfillingRateZSV : formalizedData
+        newfillingRateZSV ? newfillingRateZSV : formalizedData,
       ]
-
       if (dataType === DataTypes.VOLUME) {
         volumeDataFullDates = fillEmptyDataOfDate([newData])
       }
@@ -92,13 +94,13 @@ export function useAppHook() {
 
       let dataWB = {
         [obsName]: newData,
-        [obsNameByYear]: dataByYear[0]
+        [obsNameByYear]: dataByYear[0],
       }
 
       if (dataType === DataTypes.VOLUME) {
         dataWB = {
           ...dataWB,
-          [volumeFullDates]: volumeDataFullDates[0]
+          [volumeFullDates]: volumeDataFullDates[0],
         }
       }
       dispatch(
@@ -109,7 +111,7 @@ export function useAppHook() {
           obsDepth,
           obsName,
           obsNameByYear,
-          volumeFullDates
+          volumeFullDates,
         })
       )
 
@@ -201,7 +203,7 @@ export function useAppHook() {
       addColor({
         dataType,
         obsType: ObservationTypes.OPTIC,
-        color: randomColor
+        color: randomColor,
       })
     )
     let newColor = randomColor.replace(/,[^,]+$/, ',0.66)')
@@ -209,7 +211,7 @@ export function useAppHook() {
       addColor({
         dataType,
         obsType: ObservationTypes.RADAR,
-        color: newColor
+        color: newColor,
       })
     )
     newColor = randomColor.replace(/,[^,]+$/, ',0.33)')
@@ -217,7 +219,7 @@ export function useAppHook() {
       addColor({
         dataType,
         obsType: ObservationTypes.REFERENCE,
-        color: newColor
+        color: newColor,
       })
     )
   }, [dataType])
@@ -236,6 +238,6 @@ export function useAppHook() {
     canvas,
     noData,
     handleSetNoData,
-    noDataFound
+    noDataFound,
   }
 }

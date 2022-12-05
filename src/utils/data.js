@@ -1,10 +1,7 @@
 import { csv } from 'd3'
 import { extractField, formatValue, normalizeValue } from './value'
 import {
-  getAttributesFilepath,
   getAttributesUnit,
-  getObservationTypesAbbr,
-  getDurationAbbr
 } from './config'
 import { getSeriePath } from './seriePath'
 import { DataTypes } from '../config'
