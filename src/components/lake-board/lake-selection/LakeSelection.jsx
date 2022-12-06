@@ -8,7 +8,7 @@ import {
   CarbonView,
   CarbonViewOff,
   CarbonDownload,
-  CarbonInformation
+  CarbonInformation,
 } from '../../carbon-icons'
 import { ThreeDots } from 'react-loader-spinner'
 const StyledDiv = styled('div', {
@@ -20,7 +20,7 @@ const StyledDiv = styled('div', {
   border: '1px solid #ccc',
   borderRadius: theme.borderRadius.sm,
   marginBottom: theme.space.xs,
-  padding: theme.space.xs
+  padding: theme.space.xs,
 })
 
 const StyledContainerButton = styled('div', {
@@ -28,7 +28,7 @@ const StyledContainerButton = styled('div', {
   height: '100%',
   display: 'flex',
   justifyContent: 'space-evenly',
-  alignItems: 'center'
+  alignItems: 'center',
 })
 
 const StyledButton = styled('button', {
@@ -43,25 +43,25 @@ const StyledButton = styled('button', {
   'color': '$iconColor',
 
   '&:hover': {
-    color: '$iconHoverColor'
-  }
+    color: '$iconHoverColor',
+  },
 })
 
 const StyledContainerP = styled('div', {
   width: '50%',
   maxWidth: '50%',
-  maxHeigth: '100%'
+  maxHeigth: '100%',
 })
 
 const StyledParagraph = styled('p', {
   cursor: 'pointer',
-  fontFamily: 'arial',
+  fontFamily: 'sans-serif',
   paddingLeft: theme.space.sm,
   width: '100%',
   height: '100%',
   overflow: 'hidden',
   whiteSpace: 'nowrap',
-  textOverflow: 'ellipsis'
+  textOverflow: 'ellipsis',
 })
 const StyledDivDots = styled('div', {
   display: 'flex',
@@ -72,14 +72,14 @@ const StyledDivDots = styled('div', {
   border: '1px solid #ccc',
   borderRadius: theme.borderRadius.sm,
   marginBottom: theme.space.xs,
-  padding: theme.space.xs
+  padding: theme.space.xs,
 })
 const StyledParagraphDots = styled('p', {
   display: 'grid',
   placeItems: 'center',
-  fontFamily: 'arial',
+  fontFamily: 'sans-serif',
   height: '100%',
-  marginRight: 5
+  marginRight: 5,
 })
 
 const StyledDivObservationTypes = styled('div', {
@@ -87,21 +87,21 @@ const StyledDivObservationTypes = styled('div', {
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'space-evenly',
-  width: '20%'
+  width: '20%',
   // paddingLeft: theme.space.sm,
 })
 
 const StyledDivContainerObsTypes = styled('div', {
   height: '33%',
   display: 'flex',
-  alignItems: 'center'
+  alignItems: 'center',
 })
 
 const StyledSpanObsColor = styled('span', {
   width: '8px',
   height: '8px',
   display: 'inline-block',
-  zIndex: '1'
+  zIndex: '1',
 })
 const SpanBgWhite = styled('span', {
   backgroundColor: 'white',
@@ -110,37 +110,37 @@ const SpanBgWhite = styled('span', {
   left: '0',
   width: '8px',
   height: '8px',
-  marginLeft: '-8px'
+  marginLeft: '-8px',
 })
 
 const StyledSpanLabel = styled('span', {
-  fontFamily: 'arial',
+  fontFamily: 'sans-serif',
   marginLeft: theme.space.xs,
-  fontSize: theme.fontSizes.xs
+  fontSize: theme.fontSizes.xs,
 })
 
 const StyledReactTooltip = styled(ReactTooltip, {
-  fontFamily: 'arial',
+  fontFamily: 'sans-serif',
   fontSize: `${theme.fontSizes.xs}!important`,
   marginTop: '0 !important',
   padding: '4px 8px !important',
-  zIndex: '1111 !important'
+  zIndex: '1111 !important',
 })
 
 const backgroundBorderColored = {
   borderColor: '$borderSelectedColor',
-  backgroundColor: '$backgroundSelectedColor'
+  backgroundColor: '$backgroundSelectedColor',
 }
 
 const increaseWidth = {
   width: '70%',
-  maxWidth: '70%'
+  maxWidth: '70%',
 }
 
 const fontBold = { fontWeight: 'bold' }
 
 const decreaseWidth = {
-  width: '10%'
+  width: '10%',
 }
 
 export const LakeSelection = ({
@@ -148,7 +148,7 @@ export const LakeSelection = ({
   name,
   coordinates,
   index,
-  showLakeInfo
+  showLakeInfo,
 }) => {
   const {
     toggleChartVisibilty,
@@ -171,7 +171,7 @@ export const LakeSelection = ({
     information,
     dataType,
     obsDepth,
-    mode
+    mode,
   } = useLakeSelectionHook({ id, name, coordinates, index, showLakeInfo })
 
   if (active.includes(id) && !data[id]?.[dataType]?.[obsDepth]) {
@@ -233,13 +233,14 @@ export const LakeSelection = ({
                 <StyledSpanLabel>radar</StyledSpanLabel>
               </StyledDivContainerObsTypes>
             )}
-            {REFERENCE && data[id]?.[dataType]?.[obsDepth]?.raw[2]?.[0]?.date && (
-              <StyledDivContainerObsTypes>
-                <StyledSpanObsColor style={bgReference} />
-                <SpanBgWhite />
-                <StyledSpanLabel>ref</StyledSpanLabel>
-              </StyledDivContainerObsTypes>
-            )}
+            {REFERENCE &&
+              data[id]?.[dataType]?.[obsDepth]?.raw[2]?.[0]?.date && (
+                <StyledDivContainerObsTypes>
+                  <StyledSpanObsColor style={bgReference} />
+                  <SpanBgWhite />
+                  <StyledSpanLabel>ref</StyledSpanLabel>
+                </StyledDivContainerObsTypes>
+              )}
           </StyledDivObservationTypes>
         )}
         {YEAR && data[active.at(-1)] && (
@@ -371,5 +372,5 @@ LakeSelection.propTypes = {
   id: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   coordinates: PropTypes.array,
-  index: PropTypes.number
+  index: PropTypes.number,
 }

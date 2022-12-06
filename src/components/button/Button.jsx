@@ -1,11 +1,11 @@
-import useButtonHook from "./ButtonHook"
-import { styled } from "@stitches/react"
-import { PropTypes } from "prop-types"
+import useButtonHook from './ButtonHook'
+import { styled } from '@stitches/react'
+import { PropTypes } from 'prop-types'
 
-const StyledButton = styled("button", {
-	fontFamily: "arial",
-	textTransform: "capitalize",
-	cursor: "pointer",
+const StyledButton = styled('button', {
+  fontFamily: 'sans-serif',
+  textTransform: 'capitalize',
+  cursor: 'pointer',
 })
 
 export const Button = ({ type, value, cleanForm }) => {

@@ -9,13 +9,13 @@ const Div = styled('div', {
   transform: 'translate(-50%, -50%)',
   zIndex: '1111',
   width: '350px',
-  height: '130px',
+  height: '150px',
   backgroundColor: 'white',
   color: 'black',
   border: `1px solid ${theme.colors.disaster}`,
   borderRadius: theme.borderRadius.xs,
   padding: theme.space.sm,
-  fontFamily: 'arial',
+  fontFamily: 'sans-serif',
 })
 
 const ButtonContainer = styled('div', {
@@ -41,7 +41,7 @@ const Button = styled('button', {
 })
 
 const Tooltip = styled(ReactTooltip, {
-  fontFamily: 'arial',
+  fontFamily: 'sans-serif',
   fontSize: `${theme.fontSizes.xs}!important`,
   marginTop: '0 !important',
   padding: '4px 8px !important',
@@ -63,7 +63,7 @@ const Container = styled('div', {
 })
 
 const Message = styled('p', {
-  fontSize: theme.fontSizes.xl,
+  fontSize: theme.fontSizes.base,
 })
 const ButtonOk = styled('button', {
   'borderStyle': 'none',
@@ -75,6 +75,7 @@ const ButtonOk = styled('button', {
   'width': '40%',
   'backgroundColor': 'rgba(233, 72, 63, 0.5)',
   'color': theme.colors.white,
+  'fontSize': theme.fontSizes.base,
 
   '&:hover': {
     backgroundColor: theme.colors.disaster,
