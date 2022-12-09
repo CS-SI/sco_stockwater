@@ -1,9 +1,10 @@
-import { defineConfig, splitVendorChunkPlugin } from 'vite'
+import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import geojson from 'rollup-plugin-geojson'
 const path = require('path')
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: '/sco_stockwater/',
   plugins: [
     react(),
     geojson({
@@ -18,6 +19,5 @@ export default defineConfig({
       '@stores': path.resolve(__dirname, './src/stores'),
       '@layers': path.resolve(__dirname, './src/layers')
     }
-  },
-  base: '/'
+  }
 })

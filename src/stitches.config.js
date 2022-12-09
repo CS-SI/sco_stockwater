@@ -8,7 +8,7 @@ export const {
   globalCss,
   theme,
   createTheme,
-  config,
+  config
 } = createStitches({
   theme: {
     colors: {
@@ -31,7 +31,7 @@ export const {
       iconHoverColor: '#222222',
       sun: '#FFCD00',
       borderSelectedColor: '#222222',
-      backgroundSelectedColor: '#E5E5E5',
+      backgroundSelectedColor: '#E5E5E5'
     },
     fontSizes: {
       xxs: '8px',
@@ -41,7 +41,7 @@ export const {
       lg: '18px',
       xl: '20px',
       xxl: '24px',
-      xxxl: '32px',
+      xxxl: '32px'
     },
     space: {
       xs: '0.25rem',
@@ -49,7 +49,7 @@ export const {
       base: '1rem',
       lg: '2rem',
       xl: '4rem',
-      xxl: '8rem',
+      xxl: '8rem'
     },
     borderRadius: {
       xs: '0.25rem',
@@ -57,14 +57,14 @@ export const {
       base: '1rem',
       lg: '2rem',
       xl: '4rem',
-      xxl: '8rem',
-    },
+      xxl: '8rem'
+    }
   },
   utils: {
     h: value => ({
-      height: value,
-    }),
-  },
+      height: value
+    })
+  }
 })
 
 // define the dark theme using the de-constructed function
@@ -75,74 +75,74 @@ export const darkTheme = createTheme({
     iconColor: '#A2B5BB',
     iconHoverColor: '#FFFFFF',
     borderSelectedColor: '#FFFFFF',
-    backgroundSelectedColor: '#1D2476',
-  },
+    backgroundSelectedColor: '#1D2476'
+  }
 })
 
 export const globalStyles = globalCss({
   '*, *::before, *::after': {
-    boxSizing: 'border-box',
+    boxSizing: 'border-box'
   },
   '*': {
-    margin: '0',
+    margin: '0'
   },
   'html, body': {
     height: '100%',
     background: '$background',
-    color: '$text',
+    color: '$text'
   },
   'body': {
     lineHeight: '1.5',
-    webkitFontSmoothing: 'antialiased',
+    webkitFontSmoothing: 'antialiased'
   },
   'img, picture, video, canvas, svg': {
     display: 'block',
-    maxWidth: '100%',
+    maxWidth: '100%'
   },
 
   'input, button, textarea, select': {
-    font: 'inherit',
+    font: 'inherit'
   },
   'p, h1, h2, h3, h4, h5, h6': {
-    overflowWrap: 'break-word',
+    overflowWrap: 'break-word'
   },
   '#root, #__next': {
-    isolation: 'isolate',
+    isolation: 'isolate'
   },
   '@font-face': [
     {
       fontFamily: 'montserrat',
       fontStyle: 'normal',
       fontWeight: 400,
-      src: "url('/fonts/montserrat/montserrat-Regular.woff') format('woff')" /* Modern Browsers */,
+      src: "url('/sco_stockwater/fonts/montserrat/montserrat-Regular.woff') format('woff')" /* Modern Browsers */
     },
     {
       fontDisplay: 'swap',
       fontFamily: 'arial',
       fontStyle: 'bold',
       fontWeight: '700',
-      src: "url('/fonts/arial/arial_bold.woff') format('woff)",
+      src: "url('/fonts/arial/arial_bold.woff') format('woff)"
     },
     {
       fontDisplay: 'swap',
       fontFamily: 'arial',
       fontStyle: 'italic',
       fontWeight: '700',
-      src: "url('/fonts/arial/arial_bold_italic.woff') format('woff)",
+      src: "url('/fonts/arial/arial_bold_italic.woff') format('woff)"
     },
     {
       fontDisplay: 'swap',
       fontFamily: 'arial',
       fontStyle: 'italic',
       fontWeight: 'normal',
-      src: "url('/fonts/arial/arial_italic.woff') format('woff)",
+      src: "url('/fonts/arial/arial_italic.woff') format('woff)"
     },
     {
       fontDisplay: 'swap',
       fontFamily: 'arial',
       fontStyle: 'normal',
       fontWeight: 'normal',
-      src: "url('/fonts/arial/arial.woff') format('woff)",
-    },
-  ],
+      src: "url('/fonts/arial/arial.woff') format('woff)"
+    }
+  ]
 })

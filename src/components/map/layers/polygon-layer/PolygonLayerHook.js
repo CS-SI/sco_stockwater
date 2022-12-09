@@ -3,7 +3,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { addLake, updateActivelakes } from '@/stores/stateLakeSlice'
 import { updateModeVolume } from '../../../../stores/dataSlice'
-import { DataTypes, DurationTypes, ObservationTypes } from '../../../../config'
+import { DurationTypes } from '../../../../config'
 import {
   addLakeChartOptions,
   toggleLakeChartSelection
