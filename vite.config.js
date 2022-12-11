@@ -8,8 +8,8 @@ export default defineConfig({
   plugins: [
     react(),
     geojson({
-      compact: true
-    })
+      compact: true,
+    }),
   ],
   resolve: {
     alias: {
@@ -17,7 +17,7 @@ export default defineConfig({
       '@components': path.resolve(__dirname, './src/components'),
       '@data': path.resolve(__dirname, './src/data'),
       '@stores': path.resolve(__dirname, './src/stores'),
-      '@layers': path.resolve(__dirname, './src/layers')
-    }
-  }
+      '@layers': path.resolve(__dirname, './src/layers'),
+    },
+  },
 })

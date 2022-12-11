@@ -7,7 +7,9 @@
     "build": "node --max_old_space_size=16384 ./node_modules/vite/bin/vite.js build",
     "preview": "vite preview",
     "lint": "eslint \"src/**/*.{js,jsx}\"",
-    "lint:fix": "eslint \"src/**/*.{js,jsx}\" --fix"
+    "lint:fix": "eslint \"src/**/*.{js,jsx}\" --fix",
+    "deploy": "gh-pages -d dist",
+    "build-deploy": "npm run build & npm run deploy"
   },
   "dependencies": {
     "@lukeed/uuid": "^2.0.0",
@@ -47,6 +49,7 @@
     "eslint-config-react-app": "^7.0.1",
     "eslint-plugin-react": "^7.30.1",
     "eslint-plugin-react-hooks": "^4.6.0",
+    "gh-pages": "^4.0.0",
     "prettier": "2.7.1",
     "vite": "^3.0.9"
   }

@@ -73,7 +73,7 @@ export default function usePolygonLayerHook() {
   }, [active.length, dataFromStore, dataType, obsDepth, resizeMap, coordId.id])
 
   useEffect(() => {
-    if (containerHeight === '100%' && coordId.coord.length > 0) {
+    if (containerHeight === '100%' && coordId.coord?.length > 0) {
       map.invalidateSize(true)
       map.setView(coordId.coord, map.getZoom() - 1)
     }
