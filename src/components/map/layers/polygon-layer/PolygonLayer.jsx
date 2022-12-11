@@ -50,7 +50,7 @@ export const PolygonLayer = ({ data }) => {
           <Polygon
             key={uuid()}
             positions={polygonPositions}
-            color={ID_SWOT === id ? color : 'blue'}
+            color={active.includes(ID_SWOT) ? '#CDF0EA' : 'blue'}
             // eslint-disable-next-line react-perf/jsx-no-new-object-as-prop
             eventHandlers={{
               click: () => {
@@ -77,7 +77,7 @@ export const PolygonLayer = ({ data }) => {
         )
       })
     )
-  }, [id, color])
+  }, [id, active])
 
   return <LayerGroup>{zoomLevel > 8 ? layer : null}</LayerGroup>
 }
