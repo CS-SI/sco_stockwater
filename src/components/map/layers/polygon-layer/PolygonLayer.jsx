@@ -4,7 +4,7 @@ import { v4 as uuid } from '@lukeed/uuid'
 import { useState, useEffect } from 'react'
 import { PropTypes } from 'prop-types'
 import lakesChartOptionsSlice, {
-  toggleLakeChartSelection
+  toggleLakeChartSelection,
 } from '../../../../stores/lakesChartOptionsSlice'
 
 export const PolygonLayer = ({ data }) => {
@@ -19,9 +19,9 @@ export const PolygonLayer = ({ data }) => {
     obsDepth,
     dataFromStore,
     dataType,
-    dispatch
+    dispatch,
   } = usePolygonLayerHook({
-    data
+    data,
   })
 
   useEffect(() => {
@@ -46,7 +46,6 @@ export const PolygonLayer = ({ data }) => {
         } else {
           polygonPositions = reversedMultiPolygons
         }
-
         return (
           <Polygon
             key={uuid()}
@@ -68,7 +67,7 @@ export const PolygonLayer = ({ data }) => {
                 if (active.includes(ID_SWOT)) {
                   dispatch(toggleLakeChartSelection({ id: ID_SWOT }))
                 }
-              }
+              },
             }}
           >
             <Tooltip>
@@ -83,5 +82,5 @@ export const PolygonLayer = ({ data }) => {
   return <LayerGroup>{zoomLevel > 8 ? layer : null}</LayerGroup>
 }
 PolygonLayer.propTypes = {
-  data: PropTypes.object.isRequired
+  data: PropTypes.object.isRequired,
 }
