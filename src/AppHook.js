@@ -14,6 +14,7 @@ import {
 } from './utils/data'
 import { addLakeChartOptions } from './stores/lakesChartOptionsSlice'
 import { addYearsChartOptions } from './stores/yearsChartOptionsSlice'
+import DATA_TYPES from './config/DataTypes'
 
 export function useAppHook() {
   const [isOneLakeActive, setIsOneLakeActive] = useState(false)
@@ -38,6 +39,7 @@ export function useAppHook() {
 
       const newAllData = await getDataRaw(allSeriesPath, form).catch({})
 
+      console.log({ newAllData })
       let dataZSV = []
       let newfillingRateZSV = []
       let volumeDataFullDates = []
@@ -77,11 +79,16 @@ export function useAppHook() {
       setNoDataFound(tmp)
 
       if (noData) return
-
+      const tmpZSV = []
+      if (dataType === DATA_TYPES.FILLING_RATE) {
+        tmpZSV.push(newfillingRateZSV)
+      } else {
+        tmpZSV.push(formalizedData)
+      }
       const newData = [
         getDataFormalized(newAllData[0], dataType),
         getDataFormalized(newAllData[1], dataType),
-        newfillingRateZSV ? newfillingRateZSV : formalizedData,
+        tmpZSV[0],
       ]
       if (dataType === DataTypes.VOLUME) {
         volumeDataFullDates = fillEmptyDataOfDate([newData])
