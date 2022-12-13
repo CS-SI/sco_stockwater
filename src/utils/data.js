@@ -1,8 +1,6 @@
 import { csv } from 'd3'
 import { extractField, formatValue, normalizeValue } from './value'
-import {
-  getAttributesUnit,
-} from './config'
+import { getAttributesUnit } from './config'
 import { getSeriePath } from './seriePath'
 import { DataTypes } from '../config'
 import { getHighestValue } from './math'
@@ -44,5 +42,5 @@ export {
   getDataRaw,
   getReferenceSerieDataType,
   makeFillingRateZSVdata,
-  isEqual
+  isEqual,
 }

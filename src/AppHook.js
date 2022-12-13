@@ -39,7 +39,6 @@ export function useAppHook() {
 
       const newAllData = await getDataRaw(allSeriesPath, form).catch({})
 
-      console.log({ newAllData })
       let dataZSV = []
       let newfillingRateZSV = []
       let volumeDataFullDates = []
